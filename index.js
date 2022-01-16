@@ -5,7 +5,7 @@ let preloader = document.querySelector('.js-preloader')
 
 btn.addEventListener('click', () => {
   preloader.classList.remove('preloader--hide')
-  getUsers(randomInteger(1, 100), onDataReceived) // Делаем запрос на сервер  ffff
+  getUsers(randomInteger(1, 100), onDataReceived) // Делаем запрос на сервер
   btn.remove()
 })
 
