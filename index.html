@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>wezom-ajax</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="preloader.css">
+</head>
+<body>
+
+  <div class="container">
+    <div class="users js-users">
+      
+    </div>
+    <button class='btn js-btn'>Загрузить</button>
+  </div>
+
+  <div class="preloader preloader--hide js-preloader">
+    <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+  </div>
+
+  <template id='js-user'>
+    <div class="user-card js-user-card">
+      <div class="user-card__inner">
+        <img class="user-card__img js-user-card__img" src='#'></img>
+        <div class="user-card__name js-user-card__name"></div>
+        <div class="user-card__gender js-user-card__gender" data-gender=''></div>
+        <a class="user-card__number js-user-card__number" href='#'></a>
+        <a class="user-card__email js-user-card__email" href='#'></a>
+        <div class="user-card__location js-user-card__location"><div></div><span></span></div>
+        <div class="user-card__birthday js-user-card__birthday">
+          <div class="user-card__birthday-text">Дата рождения:</div>
+          <span></span>
+        </div>
+        <div class="user-card__reg js-user-card__reg">
+          <div class="user-card__reg-text">Дата регистрации:</div>
+          <span></span>
+        </div>
+      </div>
+    </div>
+  </template>
+
+
+<script src="service.js"></script>
+<script src="index.js"></script>
+
+</body>
+</html>
