@@ -1,5 +1,5 @@
 let template = document.querySelector('#js-user')
-let parent = document.querySelector('.users')
+let parent = document.querySelector('.js-users')
 let btn = document.querySelector('.js-btn')
 let preloader = document.querySelector('.js-preloader')
 
@@ -15,7 +15,7 @@ function randomInteger(min, max) {
 
 function onDataReceived(data) {
   preloader.remove()
-  
+
   data.results.forEach(elem => {
     template.content.querySelector('.js-user-card__img').src = elem.picture.large
     template.content.querySelector('.js-user-card__name').textContent = ''
