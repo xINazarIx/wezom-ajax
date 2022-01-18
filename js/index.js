@@ -6,7 +6,7 @@ let preloader = document.querySelector('.js-preloader')
 btn.addEventListener('click', () => {
   preloader.classList.remove('preloader--hide')
   const promise = getUsers(randomInteger(1, 100)) // Делаем запрос на сервер || Получаем промис
-  promise.then(response => response.json()).then(data => onDataReceived(data))
+  promise.then(response => response.json()).then(data => createUsers(data))
 
   btn.remove()
 })
@@ -15,7 +15,7 @@ function randomInteger(min, max) {
   return Math.round(min - 0.5 + Math.random() * (max - min + 1));
 }
 
-function onDataReceived(data) {
+function createUsers(data) {
   preloader.remove()
 
   data.results.forEach(elem => {
