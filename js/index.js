@@ -5,7 +5,9 @@ let preloader = document.querySelector('.js-preloader')
 
 btn.addEventListener('click', () => {
   preloader.classList.remove('preloader--hide')
-  getUsers(randomInteger(1, 100), onDataReceived) // Делаем запрос на сервер
+  const promise = getUsers(randomInteger(1, 100)) // Делаем запрос на сервер || Получаем промис
+  promise.then(response => response.json()).then(data => onDataReceived(data))
+
   btn.remove()
 })
 
