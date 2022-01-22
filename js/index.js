@@ -1,24 +1,49 @@
 const parent = document.querySelector('.js-users')
-const btn = document.querySelector('.js-btn')
+const loadUsersBtn = document.querySelector('.js-btn')
+const resetUsersBtn = document.querySelector('.js-btn--reset')
 const preloader = document.querySelector('.js-preloader')
 const template = document.querySelector('#js-user')
+const statistic = document.querySelector('.js-statistic')
+
+const error = document.querySelector('.js-error') // Dom element ошибки
+const errorText = document.querySelector('.js-error').firstElementChild // Dom element текста ошибки
 
 
-btn.addEventListener('click', () => {
+loadUsersBtn.addEventListener('click', () => {
+  switchElements(loadUsersBtn, true) // Скрывает кнопку "Загрузить"
+  switchElements(preloader, false) // Показывает лоадер
+
   const promise = getUsers(randomInteger(1, 100)) // Делаем запрос на сервер || Получаем промис
-  promise.then(response => response.json()).then(data => createUsers(data))
-
-  switchPreloader(true)
-  btn.classList.add('btn--hidden')
+  .then(response => response.json()) // Ответ
+  .then(data => {       
+    createUsers(data)   // Если ошибок нету запускаем ф-цию построения users 
+  })
+  .catch(error => {
+    getUsersError(error) // Если ошибка запускаем ф-цию ошибки
+  })
 })
 
+resetUsersBtn.addEventListener('click', () => {
+  switchElements(resetUsersBtn, true) // Скрываем кнопку "Обновить"
+  switchElements(preloader, false) // Показываем прелоадер
+  switchElements(error, true) // Скрываем окно с ошибкой
+
+  const promise = getUsers(randomInteger(1, 100)) // Делаем запрос на сервер || Получаем промис
+  .then(response => response.json())
+  .then(data => createUsers(data))
+  .catch(error => getUsersError(error))
+})
+
+
 function createUsers(data) {
-  let frag = document.createDocumentFragment()
+  console.log(data)
+  switchElements(preloader, true) // Выключаем прилоадер
+  
+  let frag = document.createDocumentFragment() // Обёрка для user
 
-  data.results.forEach(elem => {
-    switchPreloader(false)
+  data.results.forEach(elem => { // Цикл по результату запроса
 
-    let user = template.content.cloneNode(true)
+    let user = template.content.cloneNode(true) // Клонируем темплейт 
 
     user.querySelector('.js-user-card__img').src = elem.picture.large
     user.querySelector('.js-user-card__name').textContent = ''
@@ -36,28 +61,92 @@ function createUsers(data) {
     user.querySelector('.js-user-card__birthday span').textContent = new Date(elem.dob.date).toLocaleDateString('ru')
     user.querySelector('.js-user-card__reg span').textContent = new Date(elem.registered.date).toLocaleDateString('ru')
 
-    frag.appendChild(user)
+    frag.appendChild(user) // Вставляем элемент в обёртку которой нету в Dom
   })
 
+  parent.appendChild(frag) // Вставляем элемент в Dom
+  
+  createStatistic(data.info.results, calculateGender(data.results),calculateNations(data.results)) // Запускаем ф-цию статистики // передаём число пользователей, функцию которая вернёт объёкт с результатом (94), функцию которая вернёт объёкт с результатом национальностей
+}
+
+function getUsersError(err){ // Ф-ция обработки ошибки
+  setTimeout(() => {
+    switchElements(error, false) // Показывает Dom элемент
+    errorText.innerHTML = err // Вставляем текст ошибки в Dom элемент
+    switchElements(resetUsersBtn, false) // Показываем кнопку
+    switchElements(preloader, true) // Скрываем прелоадер
+  }, 1000) // Для наглядности
+}
+
+function createStatistic(amount, objGender, objNations){ // Функция построения статистики
+  switchElements(statistic, false) // Показывает блок статистика
+  document.querySelector('.js-statistic__amount').innerHTML = amount // параметр количество пользователей
+  document.querySelector('.js-statistic__female').innerHTML = objGender.female // ключ количество женщин
+  document.querySelector('.js-statistic__male').innerHTML = objGender.male // ключ количество мужчин
+  document.querySelector('.js-statistic__result').innerHTML = objGender.total // ключ итога
+
+  const parent = document.querySelector('.js-statistic')
+  const template = document.querySelector('#statistic-nation')
+
+  let frag = document.createDocumentFragment()
+
+  for(let key in objNations){
+    let elem = template.content.cloneNode(true)
+    elem.querySelector('.js-statistic__nation-text').innerHTML = key
+
+    if(objNations[key] == 1){ // Как правильно оформить??
+      elem.querySelector('.js-statistic__nation-num').innerHTML =': ' + objNations[key] + '-' + 'Пользователь'
+    }else if(objNations[key] >= 2 && objNations[key] <= 4){
+      elem.querySelector('.js-statistic__nation-num').innerHTML =': ' + objNations[key] + '-' + 'Пользователя'
+    }else if(objNations[key] > 4){
+      elem.querySelector('.js-statistic__nation-num').innerHTML =': ' + objNations[key] + '-' + 'Пользователей'
+    }
+
+    frag.appendChild(elem)
+  }
   parent.appendChild(frag)
+
 }
 
-
-function switchPreloader(flag){
-  flag == true ? preloader.classList.remove('preloader--hidden') : preloader.classList.add('preloader--hidden')
+function switchElements(elem, flag){ // ф-ция "показить" или "скрыть" элемент // true - скрыть, false - показать 
+  elem.classList.toggle('hidden', flag)
 }
 
-function createStatistic(){
-  const statistic = document.querySelector('.js-statistic')
-  statistic.classList.remove('statistic--hidden')
+function calculateGender(arr){ // Ф-ция подсчёта женщин и мужчин
+  let result = {
+    male: 0,
+    female: 0,
+    total: '',
+
+    count(){
+      for(let obj of arr){
+        obj.gender == 'male' ? this.male++ : this.female++
+      }
+    },
+    
+    resultTotal(){
+      if(this.male > this.female){
+        this.total = 'Мужчин'
+      }else if(this.male < this.female){
+        this.total = 'Женщин'
+      }else if(this.male == this.female){
+        this.total = 'Поровну'
+      }
+    }
+  } 
+
+  result.count()
+  result.resultTotal()
+
+  return result
 }
 
-// const state = {
-//   show(elem){
-//     return elem.classList.remove('hidden')
-//   },
-//   hide(elem){
-//     return elem.classList.add('hidden')
-//   }
-// }
+function calculateNations(arr){ // Ф-ция подсчёта национальностей
+  let result = {}
 
+  for(let obj of arr){
+    obj.nat in result ? result[obj.nat]++ : result[obj.nat] = 1
+  }
+  
+  return result
+}

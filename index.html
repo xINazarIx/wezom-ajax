@@ -12,13 +12,33 @@
 
   <div class="container">
     <div class="users js-users">
-      <div class="statistic statistic--hidden js-statistic"></div>
+      <div class="error hidden js-error">
+        <div class="error__text"></div>
+      </div>
+    </div>
+    <div class="statistic hidden js-statistic">
+      <div class="statistic__title">Статистика</div>
+      <div class="statistic__text">
+        <div class="statistic__text-inner">
+          <div>Количество пользователей:</div><span class='js-statistic__amount'></span>
+        </div>
+      </div>
+      <div class="statistic__text">
+        <div class="statistic__text-inner">
+          <div>Количество женщин:</div>
+          <span data-gender='female' class='js-statistic__female'>0</span>
+          <div>мужчин:</div>
+          <span data-gender='male' class='js-statistic__male'>0</span>
+        </div>
+        <span class='js-statistic__result'></span>
+      </div>
     </div>
     
-    <button class='btn js-btn'>Загрузить</button>
+    <button class='btn users__btn js-btn'>Загрузить</button>
+    <button class='btn hidden users__btn js-btn--reset'>Обновить</button>
   </div>
 
-  <div class="preloader preloader--hidden js-preloader">
+  <div class="preloader hidden js-preloader">
     <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
   </div>
 
@@ -43,10 +63,18 @@
     </div>
   </template>
 
+  <template id="statistic-nation">
+    <div class='statistic__nation'>
+      <div class="statistic__nation-text js-statistic__nation-text"></div>
+      <span class="statistic__nation-col js-statistic__nation-num"></span>
+    </div>
+  </template>
+
 
 <script src="js/service.js"></script>
 <script src="js/main.js"></script>
 <script src="js/index.js"></script>
+
 
 </body>
 </html>
