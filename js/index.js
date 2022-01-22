@@ -28,7 +28,7 @@ resetUsersBtn.addEventListener('click', () => {
   switchElements(preloader, false) // Показываем прелоадер
   switchElements(error, true) // Скрываем окно с ошибкой
 
-  const promise = getUsers(randomInteger(1, 100)) // Делаем запрос на сервер || Получаем промис
+  const promise = getUsers(randomInteger(1, 100)) // Делаем запрос на сервер => Получаем промис
   .then(response => response.json())
   .then(data => createUsers(data))
   .catch(error => getUsersError(error))
