@@ -15,7 +15,8 @@ loadUsersBtn.addEventListener('click', () => {
 
   const promise = getUsers(randomInteger(1, 100)) // Делаем запрос на сервер || Получаем промис
   .then(response => response.json()) // Ответ
-  .then(data => {       
+  .then(data => {
+    console.log(data)       
     createUsers(data)   // Если ошибок нету запускаем ф-цию построения users 
   })
   .catch(error => {
@@ -36,13 +37,11 @@ resetUsersBtn.addEventListener('click', () => {
 
 
 function createUsers(data) {
-  console.log(data)
   switchElements(preloader, true) // Выключаем прилоадер
   
   let frag = document.createDocumentFragment() // Обёрка для user
-
+  console(data.results)
   data.results.forEach(elem => { // Цикл по результату запроса
-
     let user = template.content.cloneNode(true) // Клонируем темплейт 
 
     user.querySelector('.js-user-card__img').src = elem.picture.large
