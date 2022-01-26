@@ -4,23 +4,29 @@ const resetUsersBtn = document.querySelector('.js-btn--reset')
 const preloader = document.querySelector('.js-preloader')
 const template = document.querySelector('#js-user')
 const statistic = document.querySelector('.js-statistic')
+const filters = document.querySelector('.js-filters')
+const filtersInput = document.querySelector('.js-filters__search')
 
 const error = document.querySelector('.js-error') // Dom element ошибки
 const errorText = document.querySelector('.js-error').firstElementChild // Dom element текста ошибки
+
+
+
+//=====================================================================================================//
+
+function switchElements(elem, flag){ // ф-ция "показить" или "скрыть" элемент // true - скрыть, false - показать 
+  elem.classList.toggle('hidden', flag)
+}
 
 
 loadUsersBtn.addEventListener('click', () => {
   switchElements(loadUsersBtn, true) // Скрывает кнопку "Загрузить"
   switchElements(preloader, false) // Показывает лоадер
 
-  const promise = getUsers(randomInteger(1, 100)) // Делаем запрос на сервер || Получаем промис
-  .then(response => response.json()) // Ответ
-  .then(data => {       
-    createUsers(data)   // Если ошибок нету запускаем ф-цию построения users 
-  })
-  .catch(error => {
-    getUsersError(error) // Если ошибка запускаем ф-цию ошибки
-  })
+  const promise = getUsers(randomInteger(1, 100))
+  .then(response => response.json())
+  .then(data => createUsers(data))
+
 })
 
 resetUsersBtn.addEventListener('click', () => {
@@ -35,14 +41,12 @@ resetUsersBtn.addEventListener('click', () => {
 })
 
 
-function createUsers(data) {
-  console.log(data)
+function createUsers(data){
+  switchElements(filters, false)
   switchElements(preloader, true) // Выключаем прилоадер
   
   let frag = document.createDocumentFragment() // Обёрка для user
-
   data.results.forEach(elem => { // Цикл по результату запроса
-
     let user = template.content.cloneNode(true) // Клонируем темплейт 
 
     user.querySelector('.js-user-card__img').src = elem.picture.large
@@ -78,6 +82,12 @@ function getUsersError(err){ // Ф-ция обработки ошибки
   }, 1000) // Для наглядности
 }
 
+
+
+
+
+//===============================================statistic====================================///
+
 function createStatistic(amount, objGender, objNations){ // Функция построения статистики
   switchElements(statistic, false) // Показывает блок статистика
   document.querySelector('.js-statistic__amount').innerHTML = amount // параметр количество пользователей
@@ -106,10 +116,6 @@ function createStatistic(amount, objGender, objNations){ // Функция по�
   }
   parent.appendChild(frag)
 
-}
-
-function switchElements(elem, flag){ // ф-ция "показить" или "скрыть" элемент // true - скрыть, false - показать 
-  elem.classList.toggle('hidden', flag)
 }
 
 function calculateGender(arr){ // Ф-ция подсчёта женщин и мужчин
@@ -149,4 +155,37 @@ function calculateNations(arr){ // Ф-ция подсчёта националь
   }
   
   return result
+}
+
+
+
+
+
+
+//====================================filters=================================================//
+
+filtersInput.addEventListener('click', function(){
+  searchUsers(this)
+})
+
+
+function searchUsers(input){
+  const arr = document.querySelectorAll('.js-user-card')
+  
+  input.oninput = function(){
+    let value = input.value // Позволяет не записывать пробелы
+
+    arr.forEach(card => {
+      switchElements(card, false)
+      let nameText = card.querySelector('.js-user-card__name').innerText.toLowerCase().replace(/\s+/g, '');
+      let phoneText = card.querySelector('.js-user-card__number').innerText.toLowerCase().replace(/\s+/g, '');
+      let emailText = card.querySelector('.js-user-card__email').innerText.toLowerCase().replace(/\s+/g, '');
+
+      value = value.toLowerCase().replace(/\s+/g, '');
+
+      if(nameText.search(value) == -1 && phoneText.search(value) == -1 && emailText.search(value) == -1){
+        switchElements(card, true)
+      }
+    })
+  }
 }
