@@ -41,12 +41,12 @@ resetUsersBtn.addEventListener('click', () => {
 })
 
 
-function createUsers(arr) {
+function createUsers(data) {
   switchElements(filters, false)
   switchElements(preloader, true) // Выключаем прилоадер
   
   let frag = document.createDocumentFragment() // Обёрка для user
-  arr.forEach(elem => { // Цикл по результату запроса
+  data.results.forEach(elem => { // Цикл по результату запроса
     let user = template.content.cloneNode(true) // Клонируем темплейт 
 
     user.querySelector('.js-user-card__img').src = elem.picture.large
