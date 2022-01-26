@@ -23,8 +23,10 @@ loadUsersBtn.addEventListener('click', () => {
   switchElements(loadUsersBtn, true) // Скрывает кнопку "Загрузить"
   switchElements(preloader, false) // Показывает лоадер
 
-  const arr = getUsers(randomInteger(1, 100))
-  createUsers(arr)
+  const promise = getUsers(randomInteger(1, 100))
+  .then(response => response.json())
+  .then(data => createUsers(data))
+
 })
 
 resetUsersBtn.addEventListener('click', () => {
@@ -68,7 +70,7 @@ function createUsers(arr) {
 
   parent.appendChild(frag) // Вставляем элемент в Dom
   
-  // createStatistic(data.info.results, calculateGender(data.results),calculateNations(data.results)) // Запускаем ф-цию статистики // передаём число пользователей, функцию которая вернёт объёкт с результатом (94), функцию которая вернёт объёкт с результатом национальностей
+  createStatistic(data.info.results, calculateGender(data.results),calculateNations(data.results)) // Запускаем ф-цию статистики // передаём число пользователей, функцию которая вернёт объёкт с результатом (94), функцию которая вернёт объёкт с результатом национальностей
 }
 
 function getUsersError(err){ // Ф-ция обработки ошибки
@@ -163,21 +165,12 @@ function calculateNations(arr){ // Ф-ция подсчёта националь
 //====================================filters=================================================//
 
 filtersInput.addEventListener('click', function(){
-  searchUsers(this , gatherDates())
+  searchUsers(this)
 })
 
-function gatherDates(){
+
+function searchUsers(input){
   const arr = document.querySelectorAll('.js-user-card')
-  let result = []
-
-  for(let elem of arr){
-    result.push(elem)
-  }
-
-  return result
-}
-
-function searchUsers(input, arr){
   
   input.oninput = function(){
     let value = input.value // Позволяет не записывать пробелы
