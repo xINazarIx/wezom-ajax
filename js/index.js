@@ -41,7 +41,7 @@ resetUsersBtn.addEventListener('click', () => {
 })
 
 
-function createUsers(arr) {
+function createUsers(data){
   switchElements(filters, false)
   switchElements(preloader, true) // Выключаем прилоадер
   
