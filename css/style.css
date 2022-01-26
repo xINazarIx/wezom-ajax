@@ -165,10 +165,6 @@ img{
   opacity: .5;
 }
 
-.hidden{
-  display: none;
-}
-
 .statistic{
   padding: 20px 0;
   margin: 0 auto;
@@ -308,4 +304,13 @@ img{
 .filters__btn:hover{
   opacity: 1;
   background-color: transparent;
+}
+
+
+
+
+
+
+.hidden{
+  display: none;
 }
