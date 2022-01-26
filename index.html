@@ -11,11 +11,17 @@
 <body>
 
   <div class="container">
+    <div class="filters">
+      <input class="filters__search" placeholder="Введите имя, номер или email"></input>
+      <button class="btn filters__btn">Очистить фильтры</button>
+    </div>
+
     <div class="users js-users">
       <div class="error hidden js-error">
         <div class="error__text"></div>
       </div>
     </div>
+
     <div class="statistic hidden js-statistic">
       <div class="statistic__title">Статистика</div>
       <div class="statistic__text">
