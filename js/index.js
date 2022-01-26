@@ -4,24 +4,27 @@ const resetUsersBtn = document.querySelector('.js-btn--reset')
 const preloader = document.querySelector('.js-preloader')
 const template = document.querySelector('#js-user')
 const statistic = document.querySelector('.js-statistic')
+const filters = document.querySelector('.js-filters')
+const filtersInput = document.querySelector('.js-filters__search')
 
 const error = document.querySelector('.js-error') // Dom element ошибки
 const errorText = document.querySelector('.js-error').firstElementChild // Dom element текста ошибки
+
+
+
+//=====================================================================================================//
+
+function switchElements(elem, flag){ // ф-ция "показить" или "скрыть" элемент // true - скрыть, false - показать 
+  elem.classList.toggle('hidden', flag)
+}
 
 
 loadUsersBtn.addEventListener('click', () => {
   switchElements(loadUsersBtn, true) // Скрывает кнопку "Загрузить"
   switchElements(preloader, false) // Показывает лоадер
 
-  const promise = getUsers(randomInteger(1, 100)) // Делаем запрос на сервер || Получаем промис
-  .then(response => response.json()) // Ответ
-  .then(data => {
-    console.log(data)       
-    createUsers(data)   // Если ошибок нету запускаем ф-цию построения users 
-  })
-  .catch(error => {
-    getUsersError(error) // Если ошибка запускаем ф-цию ошибки
-  })
+  const arr = getUsers(randomInteger(1, 100))
+  createUsers(arr)
 })
 
 resetUsersBtn.addEventListener('click', () => {
@@ -36,12 +39,12 @@ resetUsersBtn.addEventListener('click', () => {
 })
 
 
-function createUsers(data) {
+function createUsers(arr) {
+  switchElements(filters, false)
   switchElements(preloader, true) // Выключаем прилоадер
   
   let frag = document.createDocumentFragment() // Обёрка для user
-  console(data.results)
-  data.results.forEach(elem => { // Цикл по результату запроса
+  arr.forEach(elem => { // Цикл по результату запроса
     let user = template.content.cloneNode(true) // Клонируем темплейт 
 
     user.querySelector('.js-user-card__img').src = elem.picture.large
@@ -65,7 +68,7 @@ function createUsers(data) {
 
   parent.appendChild(frag) // Вставляем элемент в Dom
   
-  createStatistic(data.info.results, calculateGender(data.results),calculateNations(data.results)) // Запускаем ф-цию статистики // передаём число пользователей, функцию которая вернёт объёкт с результатом (94), функцию которая вернёт объёкт с результатом национальностей
+  // createStatistic(data.info.results, calculateGender(data.results),calculateNations(data.results)) // Запускаем ф-цию статистики // передаём число пользователей, функцию которая вернёт объёкт с результатом (94), функцию которая вернёт объёкт с результатом национальностей
 }
 
 function getUsersError(err){ // Ф-ция обработки ошибки
@@ -76,6 +79,12 @@ function getUsersError(err){ // Ф-ция обработки ошибки
     switchElements(preloader, true) // Скрываем прелоадер
   }, 1000) // Для наглядности
 }
+
+
+
+
+
+//===============================================statistic====================================///
 
 function createStatistic(amount, objGender, objNations){ // Функция построения статистики
   switchElements(statistic, false) // Показывает блок статистика
@@ -105,10 +114,6 @@ function createStatistic(amount, objGender, objNations){ // Функция по�
   }
   parent.appendChild(frag)
 
-}
-
-function switchElements(elem, flag){ // ф-ция "показить" или "скрыть" элемент // true - скрыть, false - показать 
-  elem.classList.toggle('hidden', flag)
 }
 
 function calculateGender(arr){ // Ф-ция подсчёта женщин и мужчин
@@ -148,4 +153,46 @@ function calculateNations(arr){ // Ф-ция подсчёта националь
   }
   
   return result
+}
+
+
+
+
+
+
+//====================================filters=================================================//
+
+filtersInput.addEventListener('click', function(){
+  searchUsers(this , gatherDates())
+})
+
+function gatherDates(){
+  const arr = document.querySelectorAll('.js-user-card')
+  let result = []
+
+  for(let elem of arr){
+    result.push(elem)
+  }
+
+  return result
+}
+
+function searchUsers(input, arr){
+  
+  input.oninput = function(){
+    let value = input.value // Позволяет не записывать пробелы
+
+    arr.forEach(card => {
+      switchElements(card, false)
+      let nameText = card.querySelector('.js-user-card__name').innerText.toLowerCase().replace(/\s+/g, '');
+      let phoneText = card.querySelector('.js-user-card__number').innerText.toLowerCase().replace(/\s+/g, '');
+      let emailText = card.querySelector('.js-user-card__email').innerText.toLowerCase().replace(/\s+/g, '');
+
+      value = value.toLowerCase().replace(/\s+/g, '');
+
+      if(nameText.search(value) == -1 && phoneText.search(value) == -1 && emailText.search(value) == -1){
+        switchElements(card, true)
+      }
+    })
+  }
 }
