@@ -294,7 +294,7 @@ img{
 
 .filters__btn{
   position: absolute;
-  right: -2px;
+  right: -5px;
   top: -5px;
   min-height: calc(100% + 10px);
   padding: 0 20px;
