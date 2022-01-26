@@ -30,7 +30,7 @@ resetUsersBtn.addEventListener('click', () => {
 
   const promise = getUsers(randomInteger(1, 100)) // Делаем запрос на сервер => Получаем промис
   .then(response => response.json())
-  .then(data => createUsers(data))
+  .then(data => console.log(data))
   .catch(error => getUsersError(error))
 })
 
