@@ -40,7 +40,6 @@ function createUsers(data) {
   switchElements(preloader, true) // Выключаем прилоадер
   
   let frag = document.createDocumentFragment() // Обёрка для user
-  console(data.results)
   data.results.forEach(elem => { // Цикл по результату запроса
     let user = template.content.cloneNode(true) // Клонируем темплейт 
 
