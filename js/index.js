@@ -50,6 +50,7 @@ function createUsers(data){
   switchElements(preloader, true) // Выключаем прилоадер
   
   let frag = document.createDocumentFragment() // Обёрка для user
+  
   data.results.forEach(elem => { // Цикл по результату запроса
     let user = template.content.cloneNode(true) // Клонируем темплейт 
 
@@ -74,7 +75,7 @@ function createUsers(data){
 
   parent.appendChild(frag) // Вставляем элемент в Dom
   
-  // createStatistic(data.info.results, calculateGender(data.results),calculateNations(data.results)) // Запускаем ф-цию статистики // передаём число пользователей, функцию которая вернёт объёкт с результатом (94), функцию которая вернёт объёкт с результатом национальностей
+  createStatistic(data.info.results, calculateGender(data.results),calculateNations(data.results)) // Запускаем ф-цию статистики // передаём число пользователей, функцию которая вернёт объёкт с результатом (94), функцию которая вернёт объёкт с результатом национальностей
 }
 
 function getUsersError(err){ // Ф-ция обработки ошибки
