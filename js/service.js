@@ -36,7 +36,7 @@ function getUsers(users){
         thumbnail: "https://randomuser.me/api/portraits/thumb/women/96.jpg",
       },
       registered: {date: '2002-10-21T16:56:24.920Z', age: 20},
-      name: {title: 'Mrs', first: 'Donna', last: 'Vargas'},
+      name: {title: 'Zrs', first: 'Donna', last: 'Vargas'},
       phone: "016977 2795",
     },
     {
@@ -75,7 +75,7 @@ function getUsers(users){
         thumbnail: "https://randomuser.me/api/portraits/thumb/women/96.jpg",
       },
       registered: {date: '2002-10-21T16:56:24.920Z', age: 20},
-      name: {title: 'Mrs', first: 'Samanta', last: 'Vargas'},
+      name: {title: 'Drs', first: 'Samanta', last: 'Vargas'},
       phone: "0142521 2222",
     },
     {
@@ -114,7 +114,7 @@ function getUsers(users){
         thumbnail: "https://randomuser.me/api/portraits/thumb/women/96.jpg",
       },
       registered: {date: '2002-10-21T16:56:24.920Z', age: 20},
-      name: {title: 'Mrs', first: 'Dolina', last: 'Vargas'},
+      name: {title: 'Crs', first: 'Dolina', last: 'Vargas'},
       phone: "023324 1454",
     },
     {
@@ -124,7 +124,7 @@ function getUsers(users){
         date: "1983-07-31T21:32:57.020Z"
       },
       email: "djon.vargas@example.com",
-      gender: "female",
+      gender: "male",
       id: {
         name: "NINO",
         value: "WC 90 77 77 E",
@@ -153,7 +153,7 @@ function getUsers(users){
         thumbnail: "https://randomuser.me/api/portraits/thumb/women/96.jpg",
       },
       registered: {date: '2002-10-21T16:56:24.920Z', age: 20},
-      name: {title: 'Mr', first: 'Djon', last: 'Brayn'},
+      name: {title: 'Br', first: 'Djon', last: 'Brayn'},
       phone: "023477 21255",
     },
     {
@@ -192,7 +192,7 @@ function getUsers(users){
         thumbnail: "https://randomuser.me/api/portraits/thumb/women/96.jpg",
       },
       registered: {date: '2002-10-21T16:56:24.920Z', age: 20},
-      name: {title: 'Mrs', first: 'Freya', last: 'Vargas'},
+      name: {title: 'Ars', first: 'Freya', last: 'Vargas'},
       phone: "09758377 2425",
     }
   ]

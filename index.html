@@ -12,8 +12,13 @@
 
   <div class="container">
     <div class="filters hidden js-filters">
-      <input class="filters__search js-filters__search" placeholder="Введите имя, номер или email"></input>
-      <button class="btn filters__btn">Очистить фильтры</button>
+      <input class="filters__search js-filters__search" placeholder="Введите имя, номер или email" data-gender='all'></input>
+      <div class="filters__sort-btns">
+        <button class="btn btn--noRadius filters__sort-gender js-sort-gender-btn" data-gender="female">Женщины</button>
+        <button class="btn btn--noRadius filters__sort-gender js-sort-gender-btn" data-gender="male">Мужчины</button>
+      </div>
+      <button class="btn btn--noRadius filters__sort-abc js-sort-abc-btn" data-check='false'>По-алфавиту</button>
+      <button class="btn filters__btn-clean js-clean-filters">Очистить фильтры</button>
     </div>
 
     <div class="users js-users">
