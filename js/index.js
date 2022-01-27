@@ -10,6 +10,10 @@ const filtersInput = document.querySelector('.js-filters__search')
 const error = document.querySelector('.js-error') // Dom element ошибки
 const errorText = document.querySelector('.js-error').firstElementChild // Dom element текста ошибки
 
+const btnsSortByGender = document.querySelectorAll('.js-sort-gender-btn')
+const btnSortByABC = document.querySelector('.js-sort-abc-btn')
+const cleanFiltersBtn = document.querySelector('.js-clean-filters')
+
 
 
 //=====================================================================================================//
@@ -70,7 +74,7 @@ function createUsers(data){
 
   parent.appendChild(frag) // Вставляем элемент в Dom
   
-  createStatistic(data.info.results, calculateGender(data.results),calculateNations(data.results)) // Запускаем ф-цию статистики // передаём число пользователей, функцию которая вернёт объёкт с результатом (94), функцию которая вернёт объёкт с результатом национальностей
+  // createStatistic(data.info.results, calculateGender(data.results),calculateNations(data.results)) // Запускаем ф-цию статистики // передаём число пользователей, функцию которая вернёт объёкт с результатом (94), функцию которая вернёт объёкт с результатом национальностей
 }
 
 function getUsersError(err){ // Ф-ция обработки ошибки
@@ -164,7 +168,7 @@ function calculateNations(arr){ // Ф-ция подсчёта националь
 
 //====================================filters=================================================//
 
-filtersInput.addEventListener('click', function(){
+filtersInput.addEventListener('click', function(){ 
   searchUsers(this)
 })
 
@@ -172,20 +176,106 @@ filtersInput.addEventListener('click', function(){
 function searchUsers(input){
   const arr = document.querySelectorAll('.js-user-card')
   
-  input.oninput = function(){
-    let value = input.value // Позволяет не записывать пробелы
+  input.oninput = function(){ // Следим ща изменением инпута
+    let value = input.value // При каждом изменении инпута записываем его значение
 
-    arr.forEach(card => {
-      switchElements(card, false)
-      let nameText = card.querySelector('.js-user-card__name').innerText.toLowerCase().replace(/\s+/g, '');
-      let phoneText = card.querySelector('.js-user-card__number').innerText.toLowerCase().replace(/\s+/g, '');
-      let emailText = card.querySelector('.js-user-card__email').innerText.toLowerCase().replace(/\s+/g, '');
+    arr.forEach(card => { // Проходим по всем карточкам
+
+      if(input.dataset.gender == card.querySelector('.js-user-card__gender').dataset.gender || input.dataset.gender == 'all'){
+        switchElements(card, false) // Если совпал дата-атрибут показываем карточки
+      } // Проверка: соответствует ли дата-атрибут интупа с дата-атрибутом пользователей в случаее если нажата кнопка фильтра м\ж если да, делаем отборку пользователей только по атрибуту который указали инпуту при нажатии на кнопку фильтра м\ж. По-умолчанию дата-атрибут инпута = 'Все'
+
+      let nameText = card.querySelector('.js-user-card__name').innerText.toLowerCase().replace(/\s+/g, '')
+      let phoneText = card.querySelector('.js-user-card__number').innerText.toLowerCase().replace(/\s+/g, '')
+      let emailText = card.querySelector('.js-user-card__email').innerText.toLowerCase().replace(/\s+/g, '')
 
       value = value.toLowerCase().replace(/\s+/g, '');
 
       if(nameText.search(value) == -1 && phoneText.search(value) == -1 && emailText.search(value) == -1){
-        switchElements(card, true)
-      }
+        switchElements(card, true) 
+      } // Сравниваем значение инпута и значение имени, телефона, почты. Если не совпадает скрываем
     })
+
+    if(value == ''){
+      input.classList.remove('filters__search--active')
+    }else{
+      input.classList.add('filters__search--active')
+    }
   }
 }
+
+btnsSortByGender.forEach(btn => { // Ф-ция сортировки по гендеру
+  btn.addEventListener('click', function(){
+    let gender = this.dataset.gender // Получаем дата-атрибут гендера который нужно отсортировать
+    filtersInput.dataset.gender = gender // Делаем значение дата-атрибуту инпута значени гендера который ищем
+    filtersInput.classList.remove('filters__search--active')
+    filtersInput.value = '' // На случай если пользователь что-то уже вводил
+    sortByGender(gender) // Запускаем ф-цию сортировки
+
+    btnsSortByGender.forEach(btn => {
+      btn.classList.remove('filters__sort-gender--active')
+    })
+
+    this.classList.add('filters__sort-gender--active')
+  })
+})
+
+cleanFiltersBtn.addEventListener('click', function(){
+  cleanFilters() // Ф-ция очистки фильтров
+})
+
+function sortByGender(gender) { // Ф-ция сортиров по гендеру которая принимает гендер который нужно отсортировать
+  const arr = document.querySelectorAll('.js-user-card') // Масив карточек
+  arr.forEach(card => {
+    switchElements(card, false) // Показываем карточки на случай если фильт уже был применён (нужно убрать класс hidden)
+
+    if(card.querySelector('.js-user-card__gender').dataset.gender != gender){ 
+      switchElements(card, true) // Если гендер не совпадает с гендером карточки скрываем его
+    }
+  })
+}
+
+function cleanFilters(){ // Функция очистки фильтров
+  const arr = document.querySelectorAll('.js-user-card').forEach(card => {
+    switchElements(card, false) // Показывам все карточки
+  })
+  filtersInput.value = '' // Значение инпута делам "пусто"
+  filtersInput.dataset.gender = 'all' // Значение дата-атрибута кого нужно искать делам "всех"
+
+  btnsSortByGender.forEach(btn => {
+    btn.classList.remove('filters__sort-gender--active')
+  })
+
+  filtersInput.classList.remove('filters__search--active')
+  btnSortByABC.classList.remove('filters__sort-abc--active')
+}
+
+btnSortByABC.addEventListener('click', function(){
+  sortByAbc()
+  this.classList.add('filters__sort-abc--active')
+})
+
+function sortByAbc(){
+  const parent = document.querySelector('.js-users')
+  const arr = document.querySelectorAll('.js-user-card__name')
+  let frag = document.createDocumentFragment()
+
+  let result = []
+  
+  arr.forEach(child => {
+    result.push(child.innerText)
+  })
+
+  result.sort((a,b) => a > b ? 1 : -1)
+
+  result.forEach(elem => {
+    arr.forEach(child => {
+      if(elem == child.innerText){
+        frag.appendChild(child.closest('.js-user-card'))
+      }
+    })
+  })
+
+  parent.appendChild(frag)
+}
+
