@@ -208,6 +208,7 @@ btnsSortByGender.forEach(btn => { // Ф-ция сортировки по ген�
   btn.addEventListener('click', function(){
     let gender = this.dataset.gender // Получаем дата-атрибут гендера который нужно отсортировать
     filtersInput.dataset.gender = gender // Делаем значение дата-атрибуту инпута значени гендера который ищем
+    filtersInput.classList.remove('filters__search--active')
     filtersInput.value = '' // На случай если пользователь что-то уже вводил
     sortByGender(gender) // Запускаем ф-цию сортировки
 
