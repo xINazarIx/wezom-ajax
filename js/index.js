@@ -14,43 +14,30 @@ const btnsSortByGender = document.querySelectorAll('.js-sort-gender-btn')
 const btnSortByABC = document.querySelector('.js-sort-abc-btn')
 const cleanFiltersBtn = document.querySelector('.js-clean-filters')
 
-
+let dataUsers; // Когда будет запрос на сервер в переменную запишуться данные.
 
 //=====================================================================================================//
 
-function switchElements(elem, flag){ // ф-ция "показить" или "скрыть" элемент // true - скрыть, false - показать 
-  elem.classList.toggle('hidden', flag)
-}
-
-
 loadUsersBtn.addEventListener('click', () => {
-  switchElements(loadUsersBtn, true) // Скрывает кнопку "Загрузить"
-  switchElements(preloader, false) // Показывает лоадер
+  toggleElements(loadUsersBtn, true) // Скрывает кнопку "Загрузить"
+  toggleElements(preloader, false) // Показывает лоадер
 
   const promise = getUsers(randomInteger(1, 100))
   .then(response => response.json())
-  .then(data => createUsers(data))
-
+  .then(data => {
+    dataUsers = data.results // Записываем данные в переменную
+    createUsers(dataUsers) // Создаём вёрстку пользователей 
+  })
 })
 
-resetUsersBtn.addEventListener('click', () => {
-  switchElements(resetUsersBtn, true) // Скрываем кнопку "Обновить"
-  switchElements(preloader, false) // Показываем прелоадер
-  switchElements(error, true) // Скрываем окно с ошибкой
 
-  const promise = getUsers(randomInteger(1, 100)) // Делаем запрос на сервер => Получаем промис
-  .then(response => response.json())
-  .then(data => console.log(data))
-  .catch(error => getUsersError(error))
-})
-
-function createUsers(data){
-  switchElements(filters, false)
-  switchElements(preloader, true) // Выключаем прилоадер
+function createUsers(arr){
+  toggleElements(filters, false) // Показываем блок фильтров
+  toggleElements(preloader, true) // Выключаем прилоадер
   
   let frag = document.createDocumentFragment() // Обёрка для user
 
-  data.results.forEach(elem => { // Цикл по результату запроса
+  arr.forEach(elem => { // Цикл по результату запроса
     let user = template.content.cloneNode(true) // Клонируем темплейт 
 
     user.querySelector('.js-user-card__img').src = elem.picture.large
@@ -75,94 +62,9 @@ function createUsers(data){
   })
 
   parent.appendChild(frag) // Вставляем элемент в Dom
-  
-  createStatistic(data.info.results, calculateGender(data.results),calculateNations(data.results)) // Запускаем ф-цию статистики // передаём число пользователей, функцию которая вернёт объёкт с результатом (94), функцию которая вернёт объёкт с результатом национальностей
 }
-
-function getUsersError(err){ // Ф-ция обработки ошибки
-  setTimeout(() => {
-    switchElements(error, false) // Показывает Dom элемент
-    errorText.innerHTML = err // Вставляем текст ошибки в Dom элемент
-    switchElements(resetUsersBtn, false) // Показываем кнопку
-    switchElements(preloader, true) // Скрываем прелоадер
-  }, 1000) // Для наглядности
-}
-
-
-
-
 
 //===============================================statistic====================================///
-
-function createStatistic(amount, objGender, objNations){ // Функция построения статистики
-  switchElements(statistic, false) // Показывает блок статистика
-  document.querySelector('.js-statistic__amount').innerHTML = amount // параметр количество пользователей
-  document.querySelector('.js-statistic__female').innerHTML = objGender.female // ключ количество женщин
-  document.querySelector('.js-statistic__male').innerHTML = objGender.male // ключ количество мужчин
-  document.querySelector('.js-statistic__result').innerHTML = objGender.total // ключ итога
-
-  const parent = document.querySelector('.js-statistic')
-  const template = document.querySelector('#statistic-nation')
-
-  let frag = document.createDocumentFragment()
-
-  for(let key in objNations){
-    let elem = template.content.cloneNode(true)
-    elem.querySelector('.js-statistic__nation-text').innerHTML = key
-
-    if(objNations[key] == 1){
-      elem.querySelector('.js-statistic__nation-num').innerHTML =': ' + objNations[key] + '-' + 'Пользователь'
-    }else if(objNations[key] >= 2 && objNations[key] <= 4){
-      elem.querySelector('.js-statistic__nation-num').innerHTML =': ' + objNations[key] + '-' + 'Пользователя'
-    }else if(objNations[key] > 4){
-      elem.querySelector('.js-statistic__nation-num').innerHTML =': ' + objNations[key] + '-' + 'Пользователей'
-    }
-
-    frag.appendChild(elem)
-  }
-  parent.appendChild(frag)
-
-}
-
-function calculateGender(arr){ // Ф-ция подсчёта женщин и мужчин
-  let result = {
-    male: 0,
-    female: 0,
-    total: '',
-
-    count(){
-      for(let obj of arr){
-        obj.gender == 'male' ? this.male++ : this.female++
-      }
-    },
-    
-    resultTotal(){
-      if(this.male > this.female){
-        this.total = 'Мужчин'
-      }else if(this.male < this.female){
-        this.total = 'Женщин'
-      }else if(this.male == this.female){
-        this.total = 'Поровну'
-      }
-    }
-  } 
-
-  result.count()
-  result.resultTotal()
-
-  return result
-}
-
-function calculateNations(arr){ // Ф-ция подсчёта национальностей
-  let result = {}
-
-  for(let obj of arr){
-    obj.nat in result ? result[obj.nat]++ : result[obj.nat] = 1
-  }
-  
-  return result
-}
-
 
 
 
@@ -171,115 +73,132 @@ function calculateNations(arr){ // Ф-ция подсчёта националь
 //====================================filters=================================================//
 
 filtersInput.addEventListener('click', function(){ 
-  searchUsers(this)
+  searchUsers(this, dataUsers) // Запускаем ф-ция сортировки
 })
 
 
-function searchUsers(input){
-  const arr = document.querySelectorAll('.js-user-card')
-  
-  input.oninput = function(){ // Следим за изменением инпута
-    let value = input.value // При каждом изменении инпута записываем его значение
+function searchUsers(input, arr){
+  input.oninput = function(){
+    let result = [] // Массив выходных данных
+    cleanUsers() // При введение значения будут удалятся все пользователи
+    let value = input.value // Получаем значение инпута
 
-    arr.forEach(card => { // Проходим по всем карточкам
+    let gender = input.dataset.gender // Проверяем какой гендер сортируем
+   
+    value = value.toLowerCase().replace(/\s+/g, '') // Делаем значение в нижнем регистре, без пробелов 
 
-      if(input.dataset.gender == card.querySelector('.js-user-card__gender').dataset.gender || input.dataset.gender == 'all'){
-        switchElements(card, false) // Если совпал дата-атрибут показываем карточки
-      } // Проверка: соответствует ли дата-атрибут интупа с дата-атрибутом пользователей в случаее если нажата кнопка фильтра м\ж если да, делаем отборку пользователей только по атрибуту который указали инпуту при нажатии на кнопку фильтра м\ж. По-умолчанию дата-атрибут инпута = 'Все'
-
-      let nameText = card.querySelector('.js-user-card__name').innerText.toLowerCase().replace(/\s+/g, '')
-      let phoneText = card.querySelector('.js-user-card__number').innerText.toLowerCase().replace(/\s+/g, '')
-      let emailText = card.querySelector('.js-user-card__email').innerText.toLowerCase().replace(/\s+/g, '')
-
-      value = value.toLowerCase().replace(/\s+/g, '');
-
-      if(nameText.search(value) == -1 && phoneText.search(value) == -1 && emailText.search(value) == -1){
-        switchElements(card, true) 
-      } // Сравниваем значение инпута и значение имени, телефона, почты. Если не совпадает скрываем
+    arr.forEach(card => { // Проходимся по всем объектам
+      let name = card.name.title + card.name.first + card.name.last // Соединяем имя
+      let phone = card.phone
+      let email = card.email
+      
+      name = name.toLowerCase()
+      phone = phone.replace(/\s+/g, '').replace(/[^0-9]/g, '');
+    
+      if(name.search(value) != -1 || phone.search(value) != -1 || email.search(value) != -1){
+        if(card.gender == gender || gender == 'all'){
+          result.push(card) // Добавляем объект в result если его ключи совпадают с значением инпута
+        }
+      }
     })
 
+    createUsers(result) // Создаём вёрстку на основе отсортированного массива
+
+
     if(value == ''){
-      input.classList.remove('filters__search--active')
+      toggleInputFilters(false) // Убираем у инпута поиска класс актив
     }else{
-      input.classList.add('filters__search--active')
+      toggleInputFilters(true) // Добавлям  класс актив у инпута поиска
     }
   }
 }
 
+
+
 btnsSortByGender.forEach(btn => { // Ф-ция сортировки по гендеру
   btn.addEventListener('click', function(){
-    let gender = this.dataset.gender // Получаем дата-атрибут гендера который нужно отсортировать
-    filtersInput.dataset.gender = gender // Делаем значение дата-атрибуту инпута значени гендера который ищем
-    filtersInput.classList.remove('filters__search--active')
-    filtersInput.value = '' // На случай если пользователь что-то уже вводил
-    sortByGender(gender) // Запускаем ф-цию сортировки
+    filtersInput.value = '' // На случай если пользователь вводл какое-либо значение
+    toggleInputFilters(false) // Убираем у инпута поиска класс актив
 
+    let gender = this.dataset.gender // Получаем дата-атрибут гендера который нужно отсортировать
+    sortByGender(gender, dataUsers) // Запускаем ф-цию сортировки
+
+
+    // -------------------------------------------------//
     btnsSortByGender.forEach(btn => {
-      btn.classList.remove('filters__sort-gender--active')
+      toggleBtnFilters(btn, false) // Убираем класс актив у кнопок
     })
 
-    this.classList.add('filters__sort-gender--active')
+    toggleBtnFilters(btn, true) // Добавляем кнопке класс актив
   })
 })
 
-cleanFiltersBtn.addEventListener('click', function(){
-  cleanFilters() // Ф-ция очистки фильтров
-})
 
-function sortByGender(gender) { // Ф-ция сортиров по гендеру которая принимает гендер который нужно отсортировать
-  const arr = document.querySelectorAll('.js-user-card') // Масив карточек
+function sortByGender(gender, arr) { // Ф-ция сортиров по гендеру которая принимает гендер который нужно отсортировать
+  let result = [] // Массив выходных данных
+  cleanUsers()
+
+  filtersInput.dataset.gender = gender // Устанавливаем сначение дата-атрибута какой гендер сейчас ищем по-умолчанию all
+
   arr.forEach(card => {
-    switchElements(card, false) // Показываем карточки на случай если фильт уже был применён (нужно убрать класс hidden)
-
-    if(card.querySelector('.js-user-card__gender').dataset.gender != gender){ 
-      switchElements(card, true) // Если гендер не совпадает с гендером карточки скрываем его
+    if(card.gender == gender){
+      result.push(card)
     }
   })
+
+  createUsers(result)
 }
 
-function cleanFilters(){ // Функция очистки фильтров
-  const arr = document.querySelectorAll('.js-user-card').forEach(card => {
-    switchElements(card, false) // Показывам все карточки
-  })
-  filtersInput.value = '' // Значение инпута делам "пусто"
-  filtersInput.dataset.gender = 'all' // Значение дата-атрибута кого нужно искать делам "всех"
 
-  btnsSortByGender.forEach(btn => {
-    btn.classList.remove('filters__sort-gender--active')
-  })
-
-  filtersInput.classList.remove('filters__search--active')
-  btnSortByABC.classList.remove('filters__sort-abc--active')
-}
 
 btnSortByABC.addEventListener('click', function(){
-  sortByAbc()
-  this.classList.add('filters__sort-abc--active')
+  sortByAbc(dataUsers)
+  toggleBtnSortByABC(true) // Добавляем кнопке класс актив
 })
 
 
-
-function sortByAbc(){ // Ф-ция сортировк по алфавиту
-  const parent = document.querySelector('.js-users')
-  const arr = document.querySelectorAll('.js-user-card__name')
-  let frag = document.createDocumentFragment()
-
-  let result = []
-  
-  arr.forEach(child => {
-    result.push(child.innerText)
-  })
-
-  result.sort((a,b) => a > b ? 1 : -1)
-
-  result.forEach(elem => {
-    arr.forEach(child => {
-      if(elem == child.innerText){
-        frag.appendChild(child.closest('.js-user-card'))
-      }
-    })
-  })
-
-  parent.appendChild(frag)
+function sortByAbc(arr){ // Ф-ция сортировки по алфавиту
+  let result = JSON.parse(JSON.stringify(arr)); // Копируем массив
+  result.sort((a,b) => a.name.title + a.name.first + a.name.last > b.name.title + b.name.first + b.name.last ? 1 : -1)
+  cleanUsers()
+  createUsers(result)
 }
 
+cleanFiltersBtn.addEventListener('click', function(){
+  cleanUsers() // Ф-ция удаление пользователей
+  cleanFilters() // Ф-ция очистики фильтров
+  createUsers(dataUsers) // Создаём пользоветелей без фильтров
+})
+
+function cleanFilters(){
+  filtersInput.value = ''
+  filtersInput.dataset.gender = 'all'
+  toggleBtnSortByABC(false)
+  toggleInputFilters(false)
+  btnsSortByGender.forEach(btn => toggleBtnFilters(btn, false))
+}
+
+function cleanUsers(){
+  const parent = document.querySelector('.js-users') // Вопрос, как можно более оптимизированно собрать всех и удалить
+  while(parent.firstChild){
+    parent.firstChild.remove()
+  }
+}
+
+//==================================================================================================//
+
+function toggleInputFilters(flag){
+  filtersInput.classList.toggle('filters__search--active', flag)
+}
+
+function toggleBtnFilters(btn, flag){
+  btn.classList.toggle('filters__sort-gender--active', flag)
+}
+
+function toggleElements(elem, flag){ // ф-ция "показить" или "скрыть" элемент // true - скрыть, false - показать 
+  elem.classList.toggle('hidden', flag)
+}
+
+function toggleBtnSortByABC(flag){
+  btnSortByABC.classList.toggle('filters__sort-abc--active', flag)
+}

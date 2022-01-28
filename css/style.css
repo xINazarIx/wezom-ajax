@@ -77,6 +77,7 @@ img{
   font-size: 24px;
 }
 
+
 .user-card__number{
   display: block;
   margin-top: 10px;
@@ -272,6 +273,7 @@ img{
   font-weight: 600;
 }
 
+
 .filters__sort-gender{
   background-color: transparent;
 }
@@ -280,6 +282,10 @@ img{
 .filters__sort-gender--active:hover{
   cursor: default;
   opacity: 1;
+}
+
+.filters__sort-gender:hover{
+  background-color: blueviolet;
 }
 
 .filters__sort-gender--active{
