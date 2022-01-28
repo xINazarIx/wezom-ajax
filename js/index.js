@@ -55,9 +55,11 @@ function createUsers(data){
 
     user.querySelector('.js-user-card__img').src = elem.picture.large
     user.querySelector('.js-user-card__name').textContent = ''
+    
     for (let key in elem.name) {
       user.querySelector('.js-user-card__name').textContent += ' ' + elem.name[key]
     }
+    
     user.querySelector('.js-user-card__gender').textContent = elem.gender
     user.querySelector('.js-user-card__gender').dataset.gender = elem.gender
     user.querySelector('.js-user-card__number').textContent = elem.phone
@@ -108,7 +110,7 @@ function createStatistic(amount, objGender, objNations){ // Функция по�
     let elem = template.content.cloneNode(true)
     elem.querySelector('.js-statistic__nation-text').innerHTML = key
 
-    if(objNations[key] == 1){ // Как правильно оформить??
+    if(objNations[key] == 1){
       elem.querySelector('.js-statistic__nation-num').innerHTML =': ' + objNations[key] + '-' + 'Пользователь'
     }else if(objNations[key] >= 2 && objNations[key] <= 4){
       elem.querySelector('.js-statistic__nation-num').innerHTML =': ' + objNations[key] + '-' + 'Пользователя'
@@ -176,7 +178,7 @@ filtersInput.addEventListener('click', function(){
 function searchUsers(input){
   const arr = document.querySelectorAll('.js-user-card')
   
-  input.oninput = function(){ // Следим ща изменением инпута
+  input.oninput = function(){ // Следим за изменением инпута
     let value = input.value // При каждом изменении инпута записываем его значение
 
     arr.forEach(card => { // Проходим по всем карточкам
@@ -255,7 +257,9 @@ btnSortByABC.addEventListener('click', function(){
   this.classList.add('filters__sort-abc--active')
 })
 
-function sortByAbc(){
+
+
+function sortByAbc(){ // Ф-ция сортировк по алфавиту
   const parent = document.querySelector('.js-users')
   const arr = document.querySelectorAll('.js-user-card__name')
   let frag = document.createDocumentFragment()

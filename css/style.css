@@ -285,7 +285,7 @@ img{
 }
 
 .filters__sort-gender--active{
-  background-color: purple;
+  background-color: blueviolet;
 }
 
 
@@ -326,7 +326,7 @@ img{
 }
 
 .filters__search--active{
-  background-color: purple;
+  background-color: blueviolet;
 }
 
 .filters__search::placeholder{
