@@ -1,6 +1,4 @@
 html {
-  line-height: 1.15;
-  -webkit-text-size-adjust: 100%;
   box-sizing: border-box;
 }
 
@@ -50,9 +48,10 @@ img{
 .user-card{
   border-radius: 10px;
   width: 300px;
-  height: 450px;
+  height: 470px;
   border: 5px solid purple;
   margin: 25px 15px;
+
 }
 
 .user-card__img{
@@ -145,9 +144,13 @@ img{
   border: none;
   background-color: purple;
   border-radius: 30px;
-  transition: all .5s;
+  transition: all .4s;
 
   font-family: Arial;
+}
+
+.btn--noRadius{
+  border-radius: 0px;
 }
 
 .users__btn{
@@ -250,10 +253,9 @@ img{
 }
 
 .filters{
+  overflow: hidden;
   position: relative;
   display: flex;
-  justify-content: space-between;
-  padding: 0 0 0 20px;
   margin: 0 auto;
   width: 100%;
   min-height: 60px;
@@ -263,23 +265,66 @@ img{
   border-radius: 50px;
 }
 
+.filters__sort-btns{
+  display: flex;
+  border-right: 5px solid purple;
+  border-left: 5px solid purple;
+  font-weight: 600;
+}
 
+.filters__sort-gender{
+  background-color: transparent;
+}
+
+
+.filters__sort-gender--active:hover{
+  cursor: default;
+  opacity: 1;
+}
+
+.filters__sort-gender--active{
+  background-color: blueviolet;
+}
+
+
+
+.filters__sort-abc{
+  width: 100%;
+  background-color: transparent;
+  transition: all .4s;
+}
+
+.filters__sort-abc--active{
+  background-color: blueviolet;
+}
+
+.filters__sort-abc:hover{
+  background-color: blueviolet;
+  opacity: .5;
+}
+
+.filters__sort-abc--active:hover{
+  opacity: 1;
+  cursor: default;
+}
 
 .filters__search{
-
+  padding-left: 20px;
   width: 100%;
   min-height: 100%;
   max-width: 460px;
   padding-right: 5px;
-
   background-color: transparent;
   border: none;
-  border-right: 5px solid purple;
   outline: none;
 
   color: white;
   font-size: 18px;
   font-weight: 600;
+}
+
+.filters__search--active{
+  background-color: blueviolet;
 }
 
 .filters__search::placeholder{
@@ -288,17 +333,19 @@ img{
   font-weight: 500;
 }
 
-.filters__btn{
-  position: absolute;
-  right: -5px;
-  top: -5px;
-  min-height: calc(100% + 10px);
+.filters__btn-clean{
+  background-color: transparent;
   padding: 0 20px;
-
+  white-space: nowrap;
   border-radius: 0;
   border-left: 5px solid purple;
   border-bottom-right-radius: 50px;
   border-top-right-radius: 50px;
+}
+
+.filters__btn-clean:hover{
+  background-color: blueviolet;
+  opacity: 1;
 }
 
 .filters__btn:hover{
