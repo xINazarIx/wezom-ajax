@@ -68,12 +68,90 @@ function createUsers(arr){ // Функция построения пользов
   })
 
   parent.appendChild(frag) // Вставляем элемент в Dom
+
+  createStatistic(arr) // Ф-ция которая возвращает объект с результатом
 }
 
 //===============================================statistic====================================///
+  
+
+function createStatistic(arr){ // Ф-ция построенния статистики
+  toggleElements(statistic, false) // Показываем блок статистики
+  document.querySelector('.js-statistic__amount').textContent = arr.length // Выводим количество пользователей
+  document.querySelector('.js-statistic__female').textContent = countGender(arr).female // Стучимся в ф-цию и получаем объект с ключем
+
+  document.querySelector('.js-statistic__male').textContent = countGender(arr).male // Стучимся в ф-цию и получаем объект с ключем
+
+  document.querySelector('.js-statistic__result').textContent = countGender(arr).total // Стучимся в ф-цию и получаем объект результатом
+
+  createNation(arr) // Запускаем ф-ция построения блока национальностей
+}
+
+function countGender(arr){ // Ф-ция подсчёта м/ж
+  let obj = {
+    male: 0,
+    female: 0,
+    total: ''
+  }
+
+  arr.forEach(card => {
+    card.gender == 'male' ? obj.male++ : obj.female++
+  })
+  
+  if(obj.male > obj.female){
+    obj.total = 'Мужчин'
+  }else if(obj.male == obj.female){
+    obj.total = 'Поровну'
+  }else if(obj.male < obj.female){
+    obj.total = 'Женщин'
+  }
+
+  return obj
+}
 
 
+function createNation(arr){ // Ф-ция создания блока национальностей
+  cleanNation() // Чистим на случай если блок был уже построен
+  let obj = countNations(arr) // Сохраняем результат выполнения ф-ции это объект с ключом националности и количество
 
+  const parent = document.querySelector('.js-statistic__nations')
+  const template = document.querySelector('#statistic-nation')
+  let frag = document.createDocumentFragment()
+
+  for(let key in obj){
+    let elem = template.content.cloneNode(true)
+    elem.querySelector('.js-statistic__nation-text').textContent = key
+
+    if(obj[key] == 1){
+      elem.querySelector('.js-statistic__nation-num').textContent =': ' + obj[key] + '-' + 'Пользователь'
+    }else if(obj[key] >= 2 && obj[key] <= 4){
+      elem.querySelector('.js-statistic__nation-num').textContent =': ' + obj[key] + '-' + 'Пользователя'
+    }else if(obj[key] > 4){
+      elem.querySelector('.js-statistic__nation-num').textContent =': ' + obj[key] + '-' + 'Пользователей'
+    }
+
+    frag.appendChild(elem)
+  }
+
+  parent.appendChild(frag)
+}
+
+function countNations(arr){ // Ф-ция подсчёта национальностей
+  let result = {}
+
+  for(let obj of arr){
+    obj.nat in result ? result[obj.nat]++ : result[obj.nat] = 1
+  }
+
+  return result
+}
+
+function cleanNation(){ // Ф-ция очистки блока национлайьностей 
+  const parent = document.querySelector('.js-statistic__nations')
+  while(parent.firstChild){ // Вопрос как сделать более оптимизированно?
+    parent.firstChild.remove()
+  }
+}
 
 
 //====================================filters=================================================//
