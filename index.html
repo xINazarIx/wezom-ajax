@@ -11,20 +11,102 @@
 <body>
 
   <div class="container">
+
+
     <div class="filters hidden js-filters">
       <input class="filters__search js-filters__search" placeholder="Введите имя, номер или email" data-gender='all'></input>
-      <div class="filters__sort-btns">
-        <button class="btn btn--noRadius filters__sort-gender js-sort-gender-btn" data-gender="female">Женщины</button>
-        <button class="btn btn--noRadius filters__sort-gender js-sort-gender-btn" data-gender="male">Мужчины</button>
-      </div>
-      <button class="btn btn--noRadius filters__sort-abc js-sort-abc-btn" data-check='false' data-gender='all'>По-алфавиту</button>
       <button class="btn filters__btn-clean js-clean-filters">Очистить фильтры</button>
     </div>
 
-    <div class="users js-users">
-      <div class="error hidden js-error">
-        <div class="error__text"></div>
+    <div class="container__inner">
+      <div class="sidebar hidden js-sidebar">
+
+        <div class="sidebar__widget"> 
+          <label class="checkbox">
+            <input class='checkbox__real js-sort-abc-btn' type="checkbox">
+            <span class="checkbox__fake"></span>
+            <span class="checkbox__text">По-алфавиту</span>
+          </label>
+        </div>
+
+        <div class="sidebar__widget js-gender" data-gender='default'>
+          <label class='radio'>
+            <input class='radio__real js-sort-gender-btn' type="radio" name='gender' data-gender="male">
+            <span class='radio__fake'></span>
+            <span class='radio__text'>Мужчины</span>
+          </label>
+
+          <label class='radio'>
+            <input  class='radio__real js-sort-gender-btn' type="radio" name='gender' data-gender="female">
+            <span class='radio__fake'></span>
+            <span class='radio__text'>Женщины</span>
+          </label>
+
+          <label class='radio'>
+            <input  class='radio__real js-sort-gender-btn js-radio-gender-default' type="radio" name='gender' data-gender="default" checked>
+            <span class='radio__fake'></span>
+            <span class='radio__text'>Все</span>
+          </label>
+        </div>
+
+        <div class="sidebar__widget js-age" data-age='default'>
+          <label class='radio'>
+            <input  class='radio__real js-sort-age-btn' type="radio" name='age' data-age="js-young">
+            <span class='radio__fake'></span>
+            <span class='radio__text'>Младше 35</span>
+          </label>
+
+          <label class='radio'>
+            <input  class='radio__real js-sort-age-btn' type="radio" name='age' data-age="js-adult">
+            <span class='radio__fake'></span>
+            <span class='radio__text'>от 35 до 40</span>
+          </label>
+
+          <label class='radio'>
+            <input  class='radio__real js-sort-age-btn' type="radio" name='age' data-age="js-near-old">
+            <span class='radio__fake'></span>
+            <span class='radio__text'>от 40 до 45</span>
+          </label>
+
+          <label class='radio'>
+            <input  class='radio__real js-sort-age-btn' type="radio" name='age' data-age="js-old">
+            <span class='radio__fake'></span>
+            <span class='radio__text'>Старше 45</span>
+          </label>
+
+          <label class='radio'>
+            <input  class='radio__real js-sort-age-btn js-radio-age-default' type="radio" name='age' data-age="default" checked>
+            <span class='radio__fake'></span>
+            <span class='radio__text'>Все</span>
+          </label>
+        </div>
+
+        <div class="sidebar__widget">
+          <div class="sidebar__widget-title">
+            Код оператора страны
+          </div>
+          <div class="sidebar__widget-inner js-phone-code" data-code='default'>
+
+          </div>
+        </div>
+
+  
       </div>
+      <div class="users js-users">
+        <div class="error hidden js-error">
+          <div class="error__text"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pagination hidden js-pagination">
+      <button class="pagination__btn"><</button>
+      <button class="pagination__btn pagination__btn--active">1</button>
+      <button class="pagination__btn">2</button>
+      <button class="pagination__btn">3</button>
+      <button class="pagination__btn">4</button>
+      <button class="pagination__btn">5</button>
+      <button class="pagination__btn">></button>
     </div>
 
     <div class="statistic hidden js-statistic">
@@ -80,6 +162,14 @@
       <div class="statistic__nation-text js-statistic__nation-text"></div>
       <span class="statistic__nation-col js-statistic__nation-num"></span>
     </div>
+  </template>
+
+  <template id="sidebar-label">
+    <label class='checkbox'>
+      <input class='checkbox__real js-sort-phoneCode-btn' type="checkbox" data-code=''>
+      <span class="checkbox__fake"></span>
+      <span class="checkbox__text js-sort-code-text"></span>
+    </label>
   </template>
 
 

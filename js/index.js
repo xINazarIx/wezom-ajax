@@ -2,7 +2,8 @@ const parent = document.querySelector('.js-users')
 const loadUsersBtn = document.querySelector('.js-btn') // Кнопка загрузить
 const resetUsersBtn = document.querySelector('.js-btn--reset') // Кнопка обновить 
 const preloader = document.querySelector('.js-preloader') // Прелоадер
-const template = document.querySelector('#js-user') // Карточка user 
+const template = document.querySelector('#js-user') // Карточка user
+
 
 const statistic = document.querySelector('.js-statistic') // Блок статистики
 
@@ -12,14 +13,22 @@ const filtersInput = document.querySelector('.js-filters__search') // Поиск
 const error = document.querySelector('.js-error') // Блок ошибки
 const errorText = document.querySelector('.js-error').firstElementChild // Текст ошибки
 
-const btnsSortByGender = document.querySelectorAll('.js-sort-gender-btn') // Кнопки выбопра гендера
+const sidebar = document.querySelector('.js-sidebar')
+const pagination = document.querySelector('.js-pagination')
+ 
+const btnsSortByGender = document.querySelectorAll('.js-sort-gender-btn') // Кнопки выбора гендера
 const btnSortByABC = document.querySelector('.js-sort-abc-btn') // Кнопка сортировки по алфавиту
 const cleanFiltersBtn = document.querySelector('.js-clean-filters') // Кнопка очиски фильтров
+const btnsSortByAge = document.querySelectorAll('.js-sort-age-btn')
+
+const checkGender = document.querySelector('.js-gender')
+const checkAbc = document.querySelector('.js-abc')
+const checkAge = document.querySelector('.js-age')
+let checkPhoneCodes = [];
+
 
 let dataUsers; // Когда будет запрос на сервер в переменную запишуться данные.
-let dataUsersSorted // Когда будет выбран фильтр сюда запишуться данные
-
-
+let dataUsersSorted; // Когда будет выбран фильтр сюда запишуться данные
 
 
 //=====================================================================================================//
@@ -33,12 +42,18 @@ loadUsersBtn.addEventListener('click', () => {
   .then(data => {
     dataUsers = data.results // Записываем данные в переменную
     createUsers(dataUsers) // Создаём вёрстку пользователей на основе данных
+
+    createFilters()
+    createSidebar()
+    createPagination()
+
+    createFiltersPhoneCode(dataUsers)
+    checkNumberAges(dataUsers) // Ф-ция отключения фильтров где выборка 0
+    checkNumberGenders(dataUsers) // Ф-ция отключения фильтров где выборка 0
   })
 })
 
-
 function createUsers(arr){ // Функция построения пользователей которая принимает массив объектов
-  toggleElements(filters, false) // Показываем блок фильтров
   toggleElements(preloader, true) // Выключаем прилоадер
   
   let frag = document.createDocumentFragment() // Обёрка для user
@@ -69,8 +84,21 @@ function createUsers(arr){ // Функция построения пользов
 
   parent.appendChild(frag) // Вставляем элемент в Dom
 
-  createStatistic(arr) // Ф-ция которая возвращает объект с результатом
+  createStatistic(arr) // Ф-ция которая создаёт статистику
 }
+
+function createFilters(){
+  toggleElements(filters, false)
+}
+
+function createSidebar(){
+  toggleElements(sidebar, false)
+}
+
+function createPagination(){
+  toggleElements(pagination, false)
+}
+
 
 //===============================================statistic====================================///
   
@@ -157,18 +185,18 @@ function cleanNation(){ // Ф-ция очистки блока национла�
 //====================================filters=================================================//
 
 filtersInput.addEventListener('click', function(){
-  searchUsers(this, dataUsers) // Запускаем ф-ция сортировки которая принимает инпут и мейн данные т.к приоритет наивысший 
+  searchUsers(this, dataUsers) // Запускаем ф-ция сортировки которая принимает инпут и мейн данные т.к приоритет наивысший
+   
 })
 
 
 function searchUsers(input, arr){ // Функия поиска пользователей которая принимает инпут и массив объектов
   input.oninput = function(){ // Срабатывает при изменении инпута
 
-    btnsSortByGender.forEach(btn => toggleBtnFilters(btn, false)) // На случай если пользователь выбирал фильтр
-    toggleBtnSortByABC(false) // Убираем класс актив
+    document.querySelector('.js-radio-gender-default').checked = true
+    document.querySelector('.js-radio-age-default').checked = true
+    document.querySelector('.js-sort-abc-btn').checked = false
 
-    btnSortByABC.dataset.check = 'false'; // Даём возомжность нажимать на кнопку
-    btnSortByABC.dataset.gender = 'all'; // делаем дата-атрибут поиск по всем гендерам
 
     let result = [] // Массив выходных данных
     cleanUsers() // Ф-ция чистит всех пользователей
@@ -190,7 +218,7 @@ function searchUsers(input, arr){ // Функия поиска пользова�
     })
 
     createUsers(result) // Создаём вёрстку на основе отсортированного массива
-    dataUsersSorted = [...result] // Делаем сортированный массив c данными result
+
 
     if(value == ''){
       toggleInputFilters(false) // Убираем у инпута поиска класс актив
@@ -206,58 +234,103 @@ btnsSortByGender.forEach(btn => { // Ф-ция сортировки по ген�
   btn.addEventListener('click', function(){
 
     let gender = this.dataset.gender // Получаем дата-атрибут гендера который нужно отсортировать
-    btnSortByABC.dataset.gender = gender // Устанавливает кнопке сортиров по алфавиту гендер который выбран
+    checkGender.dataset.gender = gender // Устанавливает кнопке сортиров по алфавиту гендер который выбран
 
-    dataUsersSorted === undefined ? sortByGender(gender, dataUsers) : sortByGender(gender, dataUsersSorted)
-    // Если пользователь не вводил данные отдаём массив дефолтных данных, если вводил отдаём массив сортированных данных
+    checkFilters(this)
+  })
+})
 
-    // -------------------------------------------------//
-    btnsSortByGender.forEach(btn => {
-      toggleBtnFilters(btn, false) // Убираем класс актив у кнопок
-    })
+btnSortByABC.addEventListener('click', function(){
+  checkFilters(this)
+})
 
-    toggleBtnFilters(btn, true) // Добавляем кнопке класс актив
+
+btnsSortByAge.forEach(btn => {
+  btn.addEventListener('click', function(){
+    let age = this.dataset.age
+    checkAge.dataset.age = age
+    checkFilters()
   })
 })
 
 
-function sortByGender(gender, arr) { // Ф-ция сортировки по гендеру которая принимает гендер который нужно отсортировать
+function checkFilters(){ // Главная ф-ция фильтров, запускается при нажатии на любой фильтр
+  cleanUsers()
+  deleteSearchInput()
 
+  dataUsersSorted = [...dataUsers]
+
+  if(checkGender.dataset.gender != 'default'){
+    dataUsersSorted = [...sortByGender(checkGender.dataset.gender, dataUsersSorted)]
+  }
+
+  
+  if(btnSortByABC.checked){
+    dataUsersSorted = [...sortByAbc(dataUsersSorted)]
+  }
+
+  if(checkAge.dataset.age != 'default'){
+    dataUsersSorted = [...sortByAge(checkAge.dataset.age, dataUsersSorted)]
+  }
+
+  if(checkPhoneCodes > 0){
+    dataUsersSorted = [...sortByPhoneCode(dataUsersSorted)]
+  }
+
+  createUsers(dataUsersSorted)
+}
+
+
+
+
+
+function sortByGender(gender, arr) { // Ф-ция сортировки по гендеру которая принимает гендер который нужно отсортировать
   let result = [] // Массив выходных данных
-  cleanUsers() // Чистит пользователей
 
   arr.forEach(card => {
-    if(card.gender == gender || gender == 'all'){
+    if(card.gender == gender || gender == 'default'){
       result.push(card)
     }
   })
 
-  createUsers(result)
+  return result
 }
 
 
 
-btnSortByABC.addEventListener('click', function(){
-  let gender = this.dataset.gender // Получаем гендер который нужно учесть при сортирови, по умолчанию 'all'
-
-  if(this.dataset.check == 'false'){ // Если на кнопку нажимали, запрещаем нажимать еще раз
-    dataUsersSorted === undefined ? sortByAbc(dataUsers, gender) : sortByAbc(dataUsersSorted, gender)
-    // Если пользователь не нажимал на фильтры отдаем дефолтный массив
-    toggleBtnSortByABC(true) // Добавляем кнопке класс актив
-    this.dataset.check = 'true' // Меням атрибут на true
-  }
-
-})
 
 
-function sortByAbc(arr, gender){ // Ф-ция сортировки по алфавиту
-  cleanUsers() // Ф-ция удаления пользователей
+function sortByAbc(arr){ // Ф-ция сортировки по алфавиту
   let result = [...arr]  // Копируем массив
   result.sort((a,b) => a.name.title + a.name.first + a.name.last > b.name.title + b.name.first + b.name.last ? 1 : -1)
-  dataUsersSorted = [...result] // Записываем сортированные данные
 
-  sortByGender(gender, dataUsersSorted) // Нужно запустить эту ф-цию чтобы учесть гендер
+  return result
 }
+
+
+
+
+
+function sortByAge(age, arr){ // Ф-ция фолтра по возрасту, принимает возраст который сортируем
+
+  let result = [...arr]
+
+  arr.forEach(card => {
+    if(age == 'js-young'){
+      result = result.filter(card => card.dob.age <= 34)
+    }else if(age == 'js-adult'){
+      result = result.filter(card => card.dob.age >= 35 && card.dob.age <= 39)
+    }else if(age == 'js-near-old'){
+      result = result.filter(card => card.dob.age >= 40 && card.dob.age <= 44)
+    }else if(age == 'js-old'){
+      result = result.filter(card => card.dob.age >= 45)
+    }
+  })
+
+  return result
+}
+
+
 
 
 cleanFiltersBtn.addEventListener('click', function(){
@@ -266,16 +339,18 @@ cleanFiltersBtn.addEventListener('click', function(){
   createUsers(dataUsers) // Создаём пользоветелей без фильтров
 })
 
-function cleanFilters(){
-  filtersInput.value = '' // Значения поиска делаем пустое
-  toggleBtnSortByABC(false) // Удаляем класс актив у кнопки сорт. по-алфавиту
-  toggleInputFilters(false) // Удаляем класс актив инпута поиска
-  btnsSortByGender.forEach(btn => toggleBtnFilters(btn, false)) // Удаляем класс актив у кнопок сорт. по-гендеру
 
 
-  btnSortByABC.dataset.gender = 'all' // Кнопке сортировки по алфавиту делаем атрибут 'всех'
-  btnSortByABC.dataset.check = 'false' // Отменяем нажатие по єтой кнопке
 
+
+function cleanFilters(){ // Ф-ция очистки филтров
+  deleteSearchInput()
+  document.querySelector('.js-sort-abc-btn').checked = false
+  document.querySelector('.js-radio-gender-default').checked = true
+  checkAge.dataset.age = 'default'
+  checkGender.dataset.age = 'default'
+  document.querySelector('.js-radio-age-default').checked = true
+  cleanPhoneCodeFilters()
 
   dataUsersSorted = undefined // Делаем сортированные дынные пустыми
 }
@@ -303,4 +378,117 @@ function toggleElements(elem, flag){
 
 function toggleBtnSortByABC(flag){
   btnSortByABC.classList.toggle('filters__sort-abc--active', flag)
+}
+
+//==================================================================================================//
+
+function checkNumberAges(arr){ // Ф-ция отключения фильтра если выборка 0
+  btnsSortByAge.forEach(btn => {
+    let result = [...arr]
+ 
+    if(btn.dataset.age == 'js-young'){
+      result = result.filter(card => card.dob.age <= 34)
+
+      if(result.length == 0){
+        btn.disabled = true
+      }
+    }else if(btn.dataset.age == 'js-adult'){
+      result = result.filter(card => card.dob.age >= 35 && card.dob.age <= 39)
+
+      if(result.length == 0){
+        btn.disabled = true
+      }
+    }else if(btn.dataset.age == 'js-near-old'){
+      result = result.filter(card => card.dob.age >= 40 && card.dob.age <= 44)
+
+      if(result.length == 0){
+        btn.disabled = true
+      }
+
+    }else if(btn.dataset.age == 'js-old'){
+      result = result.filter(card => card.dob.age >= 45)
+
+      if(result.length == 0){
+        btn.disabled = true
+      }
+    }
+  })
+}
+
+function checkNumberGenders(arr){ // Ф-ция отключения выборки если выборка 0
+  btnsSortByGender.forEach(btn => {
+    let obj = countGender(arr)
+    if(obj[btn.dataset.gender] == 0){
+      btn.disabled = true
+    }
+  })
+}
+
+function deleteSearchInput(){
+  filtersInput.value = ''
+  toggleInputFilters(false)
+}
+
+function createFiltersPhoneCode(arr){
+  const parent = document.querySelector('.js-phone-code')
+  let template = document.querySelector('#sidebar-label')
+  let frag = document.createDocumentFragment()
+
+  let checkObj = {}
+
+  arr.forEach(obj => {
+    
+    if(obj.nat in checkObj == false){
+      checkObj[obj.nat] = 1
+      let filter = template.content.cloneNode(true)
+      filter.querySelector('.js-sort-code-text').textContent = obj.nat
+      filter.querySelector('.js-sort-phoneCode-btn').dataset.code = obj.nat
+      frag.appendChild(filter)
+    }
+  })
+
+  parent.appendChild(frag)
+
+  gatherPhoneCodeBtns()
+}
+
+function gatherPhoneCodeBtns(){
+  const btns = document.querySelectorAll('.js-sort-phoneCode-btn')
+
+  btns.forEach(btn => {
+    btn.addEventListener('click', function(){
+      btn.checked ? checkPhoneCodes++ : checkPhoneCodes--
+      checkFilters()
+    })
+  })
+}
+
+function sortByPhoneCode(arr){
+  const btns = document.querySelectorAll('.js-sort-phoneCode-btn')
+
+  let result = []
+  let codes = []
+
+  btns.forEach(btn => {
+    if(btn.checked){
+      codes.push(btn.dataset.code)
+    }
+  })
+
+  codes.forEach(code => {
+    arr.forEach(card => {
+      if(code == card.nat){
+        result.push(card)
+      }
+    })
+  })
+ 
+  return result
+}
+
+function cleanPhoneCodeFilters(){
+  const btns = document.querySelectorAll('.js-sort-phoneCode-btn')
+  btns.forEach(btn => {
+    btn.checked = false
+  })
 }
