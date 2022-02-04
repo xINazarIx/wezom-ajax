@@ -14,7 +14,6 @@ const error = document.querySelector('.js-error') // Блок ошибки
 const errorText = document.querySelector('.js-error').firstElementChild // Текст ошибки
 
 const sidebar = document.querySelector('.js-sidebar')
-const pagination = document.querySelector('.js-pagination')
  
 const btnsSortByGender = document.querySelectorAll('.js-sort-gender-btn') // Кнопки выбора гендера
 const btnSortByABC = document.querySelector('.js-sort-abc-btn') // Кнопка сортировки по алфавиту
@@ -37,15 +36,16 @@ loadUsersBtn.addEventListener('click', () => {
   toggleElements(loadUsersBtn, true) // Скрывает кнопку "Загрузить"
   toggleElements(preloader, false) // Показывает лоадер
 
-  const promise = getUsers(randomInteger(1, 100))
+  const promise = getUsers(randomInteger(50, 250))
   .then(response => response.json())
   .then(data => {
     dataUsers = data.results // Записываем данные в переменную
-    createUsers(dataUsers) // Создаём вёрстку пользователей на основе данных
+
+    createPagination(dataUsers)
 
     createFilters()
     createSidebar()
-    createPagination()
+
 
     createFiltersPhoneCode(dataUsers)
     checkNumberAges(dataUsers) // Ф-ция отключения фильтров где выборка 0
@@ -94,11 +94,6 @@ function createFilters(){
 function createSidebar(){
   toggleElements(sidebar, false)
 }
-
-function createPagination(){
-  toggleElements(pagination, false)
-}
-
 
 //===============================================statistic====================================///
   
@@ -186,19 +181,17 @@ function cleanNation(){ // Ф-ция очистки блока национла�
 
 filtersInput.addEventListener('click', function(){
   searchUsers(this, dataUsers) // Запускаем ф-ция сортировки которая принимает инпут и мейн данные т.к приоритет наивысший
-   
 })
 
 
 function searchUsers(input, arr){ // Функия поиска пользователей которая принимает инпут и массив объектов
   input.oninput = function(){ // Срабатывает при изменении инпута
 
-    document.querySelector('.js-radio-gender-default').checked = true
-    document.querySelector('.js-radio-age-default').checked = true
-    document.querySelector('.js-sort-abc-btn').checked = false
+    cleanFiltersLocal()
 
 
     let result = [] // Массив выходных данных
+
     cleanUsers() // Ф-ция чистит всех пользователей
 
     let value = input.value // Получаем значение инпута
@@ -217,7 +210,7 @@ function searchUsers(input, arr){ // Функия поиска пользова�
       }
     })
 
-    createUsers(result) // Создаём вёрстку на основе отсортированного массива
+    createPagination(result)
 
 
     if(value == ''){
@@ -277,7 +270,7 @@ function checkFilters(){ // Главная ф-ция фильтров, запу�
     dataUsersSorted = [...sortByPhoneCode(dataUsersSorted)]
   }
 
-  createUsers(dataUsersSorted)
+  createPagination(dataUsersSorted)
 }
 
 
@@ -335,24 +328,29 @@ function sortByAge(age, arr){ // Ф-ция фолтра по возрасту, �
 
 cleanFiltersBtn.addEventListener('click', function(){
   cleanUsers() // Ф-ция удаление пользователей
-  cleanFilters() // Ф-ция удаления фильтров
-  createUsers(dataUsers) // Создаём пользоветелей без фильтров
+  cleanFiltersGlobal() // Ф-ция удаления фильтров
+  createPagination(dataUsers) // Создаём пользоветелей без фильтров
 })
 
 
-
-
-
-function cleanFilters(){ // Ф-ция очистки филтров
-  deleteSearchInput()
+function cleanFiltersLocal(){
+  document.querySelector('.js-radio-age-default').checked = true
   document.querySelector('.js-sort-abc-btn').checked = false
   document.querySelector('.js-radio-gender-default').checked = true
-  checkAge.dataset.age = 'default'
-  checkGender.dataset.age = 'default'
-  document.querySelector('.js-radio-age-default').checked = true
+
   cleanPhoneCodeFilters()
 
+  checkAge.dataset.age = 'default'
+  checkGender.dataset.gender = 'default'
+
+
   dataUsersSorted = undefined // Делаем сортированные дынные пустыми
+}
+
+
+function cleanFiltersGlobal(){ // Ф-ция очистки фильтров
+  cleanFiltersLocal()
+  deleteSearchInput()
 }
 
 function cleanUsers(){  //  Ф-ция удаления пользователей
@@ -482,7 +480,7 @@ function sortByPhoneCode(arr){
       }
     })
   })
- 
+
   return result
 }
 
@@ -491,4 +489,82 @@ function cleanPhoneCodeFilters(){
   btns.forEach(btn => {
     btn.checked = false
   })
+
+  checkPhoneCodes = []
+}
+
+//================================pagination======================================//
+
+const pagination = document.querySelector('.js-pagination')
+
+function createPagination(arr){
+  let dataOnPage = 27
+  cleanPaginationBtns()
+  toggleElements(pagination, false)
+
+  createPaginationBtns(dataOnPage, arr)
+  createPaginationPage(arr, dataOnPage, 1)
+
+  let btns = document.querySelectorAll('.js-pagination-link')
+
+  btns.forEach(btn => {
+    btn.addEventListener('click', function(){
+      createPaginationPage(arr, dataOnPage, btn.dataset.page, btn)
+    })
+  })
+}
+
+
+function createPaginationBtns(dataOnPage, arr){
+  let parent = document.querySelector('.js-pagination-inner')
+  let frag = document.createDocumentFragment()
+  let template = document.querySelector('#pagination-links')
+
+  let btns = document.querySelectorAll('.js-pagination-btn')
+  btns.forEach(btn => {
+    toggleElements(btn, false)
+  })
+
+  let numberOfPages = Math.ceil(arr.length / dataOnPage)
+
+  for(let i = 1; i <= numberOfPages; i++){
+    let btn = template.content.cloneNode(true)
+
+    btn.querySelector('.js-pagination-link').textContent = i
+    btn.querySelector('.js-pagination-link').dataset.page = i
+
+    frag.appendChild(btn)
+  }
+
+  parent.appendChild(frag)
+}
+
+function togglePaginationBtn(btn){
+  const btns = document.querySelectorAll('.pagination__link')
+  btns.forEach(btn => {
+    btn.classList.remove('pagination__link--active')
+  })
+
+  btn.classList.add('pagination__link--active')
+}
+
+function cleanPaginationBtns(){
+  const parent = document.querySelector('.js-pagination-inner') // Вопрос, как можно более оптимизированно собрать всех и удалить
+  while(parent.firstChild){
+    parent.firstChild.remove()
+  }
+}
+
+function createPaginationPage(arr, dataOnPage, page, btn){
+  cleanUsers()
+  if(btn == undefined){
+    togglePaginationBtn(document.querySelector('.js-pagination-inner').firstElementChild)
+  }else{
+    togglePaginationBtn(btn)
+  }
+  let start = (page - 1) * dataOnPage
+  let end = start + dataOnPage
+  let data = arr.slice(start, end)
+
+  createUsers(data)
 }

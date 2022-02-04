@@ -442,7 +442,13 @@ img{
   margin-bottom: 50px;
 }
 
-.pagination__btn{
+.pagination__inner{
+  display: flex;
+  margin: 0 25px;
+}
+
+.pagination__btn,
+.pagination__link{
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -458,32 +464,24 @@ img{
   transition: all .4s;
 }
 
-.pagination__btn--active{
+.pagination__link--active{
   border: 3px solid white;
   color: white;
 }
 
+.pagination__link:hover,
 .pagination__btn:hover{
   border: 3px solid white;
   color: white
 }
 
-.pagination__btn + .pagination__btn{
+.pagination__link + .pagination__link{
   margin-left: 10px;
 }
 
-.pagination__btn:first-child{
-  margin-right: 15px;
+.pagination__btn + .pagination__btn{
+  margin-left: 10px;
 }
-
-.pagination__btn:last-child{
-  margin-left: 25px;
-}
-
-
-
-
-
 
 
 

@@ -100,13 +100,11 @@
     </div>
 
     <div class="pagination hidden js-pagination">
-      <button class="pagination__btn"><</button>
-      <button class="pagination__btn pagination__btn--active">1</button>
-      <button class="pagination__btn">2</button>
-      <button class="pagination__btn">3</button>
-      <button class="pagination__btn">4</button>
-      <button class="pagination__btn">5</button>
-      <button class="pagination__btn">></button>
+      <button class="pagination__btn hidden js-pagination-btn" data-page='prev'><</button>
+      <button class="pagination__btn hidden js-pagination-btn" data-page='start'>...</button>
+      <div class="pagination__inner js-pagination-inner"></div>
+      <button class="pagination__btn hidden js-pagination-btn" data-page='last'>...</button>
+      <button class="pagination__btn hidden js-pagination-btn" data-page='next'>></button>
     </div>
 
     <div class="statistic hidden js-statistic">
@@ -170,6 +168,10 @@
       <span class="checkbox__fake"></span>
       <span class="checkbox__text js-sort-code-text"></span>
     </label>
+  </template>
+
+  <template id="pagination-links">
+    <a href='#' class="pagination__link js-pagination-link" data-page=''></a>
   </template>
 
 
