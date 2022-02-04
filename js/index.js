@@ -25,7 +25,7 @@ const checkAbc = document.querySelector('.js-abc')
 const checkAge = document.querySelector('.js-age')
 let checkPhoneCodes = [];
 
-
+const dataOnPage = 5
 let dataUsers; // Когда будет запрос на сервер в переменную запишуться данные.
 let dataUsersSorted; // Когда будет выбран фильтр сюда запишуться данные
 
@@ -36,12 +36,12 @@ loadUsersBtn.addEventListener('click', () => {
   toggleElements(loadUsersBtn, true) // Скрывает кнопку "Загрузить"
   toggleElements(preloader, false) // Показывает лоадер
 
-  const promise = getUsers(randomInteger(50, 250))
+  const promise = getUsers(randomInteger(95, 100))
   .then(response => response.json())
   .then(data => {
     dataUsers = data.results // Записываем данные в переменную
 
-    createPagination(dataUsers)
+    createPage(dataUsers)
 
     createFilters()
     createSidebar()
@@ -210,7 +210,7 @@ function searchUsers(input, arr){ // Функия поиска пользова�
       }
     })
 
-    createPagination(result)
+    createPage(result, 1)
 
 
     if(value == ''){
@@ -250,7 +250,6 @@ btnsSortByAge.forEach(btn => {
 function checkFilters(){ // Главная ф-ция фильтров, запускается при нажатии на любой фильтр
   cleanUsers()
   deleteSearchInput()
-
   dataUsersSorted = [...dataUsers]
 
   if(checkGender.dataset.gender != 'default'){
@@ -270,7 +269,7 @@ function checkFilters(){ // Главная ф-ция фильтров, запу�
     dataUsersSorted = [...sortByPhoneCode(dataUsersSorted)]
   }
 
-  createPagination(dataUsersSorted)
+  createPage(dataUsersSorted)
 }
 
 
@@ -329,7 +328,7 @@ function sortByAge(age, arr){ // Ф-ция фолтра по возрасту, �
 cleanFiltersBtn.addEventListener('click', function(){
   cleanUsers() // Ф-ция удаление пользователей
   cleanFiltersGlobal() // Ф-ция удаления фильтров
-  createPagination(dataUsers) // Создаём пользоветелей без фильтров
+  createPage(dataUsers) // Создаём пользоветелей без фильтров
 })
 
 
@@ -497,39 +496,82 @@ function cleanPhoneCodeFilters(){
 
 const pagination = document.querySelector('.js-pagination')
 
-function createPagination(arr){
-  let dataOnPage = 27
-  cleanPaginationBtns()
+let page = 1;
+
+function createPage(arr){
   toggleElements(pagination, false)
+  cleanPaginationBtns()
+  cleanUsers()
+  console.log(page)
+  let countOfBtns = Math.ceil(arr.length / dataOnPage)
+  let start = (page - 1) * dataOnPage
+  let end = start + dataOnPage
+  arr = arr.slice(start,end)
 
-  createPaginationBtns(dataOnPage, arr)
-  createPaginationPage(arr, dataOnPage, 1)
+  createPaginationBtns(countOfBtns)
+  togglePaginationBtns(document.querySelector('.js-pagination-link[data-page="'+page+'"]'))
+  createUsers(arr)
 
-  let btns = document.querySelectorAll('.js-pagination-link')
+  const paginationLinks = document.querySelectorAll('.js-pagination-link')
+  const paginationBtns = document.querySelectorAll('.js-pagination-btn')
 
-  btns.forEach(btn => {
-    btn.addEventListener('click', function(){
-      createPaginationPage(arr, dataOnPage, btn.dataset.page, btn)
+  paginationLinks.forEach(btn => {
+    btn.addEventListener('click', function clickPaginationLink(){
+      page = btn.dataset.page
+      dataUsersSorted == undefined ? createPage(dataUsers) : createPage(dataUsersSorted)
+      btn.removeEventListener('click', clickPaginationLink)
+    })
+  })
+
+  paginationBtns.forEach(btn => {
+    toggleElements(btn, false)
+
+    btn.addEventListener('click', function clickPaginationBtn(){
+      if(btn.dataset.page == 'next'){
+        dataUsersSorted == undefined ? createPage(dataUsers, ++page) : createPage(dataUsersSorted, ++page)
+        btn.removeEventListener('click', clickPaginationBtn)
+      }
     })
   })
 }
 
+function paginationLinks(page){
+  console.log(page)
+  const paginationLinks = document.querySelectorAll('.js-pagination-link')
+  const paginationBtns = document.querySelectorAll('.js-pagination-btn')
 
-function createPaginationBtns(dataOnPage, arr){
-  let parent = document.querySelector('.js-pagination-inner')
-  let frag = document.createDocumentFragment()
-  let template = document.querySelector('#pagination-links')
+  paginationLinks.forEach(btn => {
+    
+    btn.addEventListener('click', function clickPaginationLink(){
+      page = btn.dataset.page
 
-  let btns = document.querySelectorAll('.js-pagination-btn')
-  btns.forEach(btn => {
-    toggleElements(btn, false)
+      dataUsersSorted == undefined ? createPage(dataUsers, page) : createPage(dataUsersSorted, page)
+
+      btn.removeEventListener('click', clickPaginationLink)
+    })
+
   })
 
-  let numberOfPages = Math.ceil(arr.length / dataOnPage)
+  paginationBtns.forEach(btn => {
+    toggleElements(btn, false)
 
-  for(let i = 1; i <= numberOfPages; i++){
+    btn.addEventListener('click', function clickPaginationBtn(){
+      if(btn.dataset.page == 'next'){
+        dataUsersSorted == undefined ? createPage(dataUsers, ++page) : createPage(dataUsersSorted, ++page)
+
+        btn.removeEventListener('click', clickPaginationBtn)
+      }
+    })
+  })
+}
+
+function createPaginationBtns(countOfBtns){
+  const parent = document.querySelector('.js-pagination-inner')
+  const template = document.querySelector('#pagination-links')
+  let frag = document.createDocumentFragment()
+
+  for(let i = 1; i <= countOfBtns; i++){
     let btn = template.content.cloneNode(true)
-
     btn.querySelector('.js-pagination-link').textContent = i
     btn.querySelector('.js-pagination-link').dataset.page = i
 
@@ -539,14 +581,6 @@ function createPaginationBtns(dataOnPage, arr){
   parent.appendChild(frag)
 }
 
-function togglePaginationBtn(btn){
-  const btns = document.querySelectorAll('.pagination__link')
-  btns.forEach(btn => {
-    btn.classList.remove('pagination__link--active')
-  })
-
-  btn.classList.add('pagination__link--active')
-}
 
 function cleanPaginationBtns(){
   const parent = document.querySelector('.js-pagination-inner') // Вопрос, как можно более оптимизированно собрать всех и удалить
@@ -555,16 +589,12 @@ function cleanPaginationBtns(){
   }
 }
 
-function createPaginationPage(arr, dataOnPage, page, btn){
-  cleanUsers()
-  if(btn == undefined){
-    togglePaginationBtn(document.querySelector('.js-pagination-inner').firstElementChild)
-  }else{
-    togglePaginationBtn(btn)
-  }
-  let start = (page - 1) * dataOnPage
-  let end = start + dataOnPage
-  let data = arr.slice(start, end)
+function togglePaginationBtns(btn){
+  const btns = document.querySelectorAll('.js-pagination-link')
+  btns.forEach(btn => {
+    btn.classList.remove('pagination__link--active')
+  })
 
-  createUsers(data)
+  btn.classList.add('pagination__link--active')
 }
+
