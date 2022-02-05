@@ -539,7 +539,9 @@ function pageDefault(){
 
 function createPage(arr){
   cleanUsers()
-  cleanPagintationBtns()
+  cleanPaginationLinks()
+  сleanPaginationBtns()
+
   let defaultArr = [...arr]
   
   dataCheck = checkShowUsers.dataset.users
@@ -566,8 +568,10 @@ function createGlobalPagination(arr, dataOnPage){
 
 
   let page = currentPage.dataset.currentpage
-  console.log(page)
-  console.log(currentPage.dataset.currentpage)
+
+  console.log('Page:', page, typeof(page))
+  console.log('CurrentPage:', currentPage.dataset.currentpage, typeof(currentPage.dataset.currentpage))
+
   let countPaginationBtns = Math.ceil(arr.length / dataOnPage)
   let start = (page - 1) * dataOnPage
   let end = start + dataOnPage
@@ -582,6 +586,7 @@ function createGlobalPagination(arr, dataOnPage){
 function switchPaginationLinks(){
   let activeLink = currentPage.dataset.currentpage
   const paginationLinks = document.querySelectorAll('.js-pagination-link')
+
   if(paginationLinks.length != 0){
     paginationLinks.forEach(link => {
       link.classList.remove('pagination__link--active')
@@ -595,6 +600,7 @@ function switchPaginationLinks(){
 
 function createPaginationBtns(countPaginationBtns){
   showPagination()
+  showPaginationBtns()
 
   const parent = document.querySelector('.js-pagination-inner')
   const template = document.querySelector('#pagination-links')
@@ -619,23 +625,42 @@ function createPaginationBtns(countPaginationBtns){
 
 
 function switchPages(){
-  const paginationsLinks = document.querySelectorAll('.js-pagination-link')
+  const paginationElems = document.querySelectorAll('.js-pagination-elem')
 
-  paginationsLinks.forEach(btn => {
-    btn.addEventListener('click', function(){
-      currentPage.dataset.currentpage = btn.dataset.page
-      dataUsersSorted == undefined ? createPage(dataUsers) : createPage(dataUsersSorted)
+
+  paginationElems.forEach(btn => {
+    btn.addEventListener('click', function clickPaginationLink(){
+      if(btn.dataset.page == 'next'){
+        let page = parseInt(currentPage.dataset.currentpage)
+        currentPage.dataset.currentpage = ++page
+        dataUsersSorted == undefined ? createPage(dataUsers) : createPage(dataUsersSorted)
+
+        btn.removeEventListener('click', clickPaginationLink)
+      }else{
+        currentPage.dataset.currentpage = btn.dataset.page
+        dataUsersSorted == undefined ? createPage(dataUsers) : createPage(dataUsersSorted)
+        
+        btn.removeEventListener('click', clickPaginationLink)
+      }
     })
   })
+
 }
 
 
 
-function cleanPagintationBtns(){
+function cleanPaginationLinks(){
   const parent = document.querySelector('.js-pagination-inner') // Вопрос, как можно более оптимизированно собрать всех и удалить
   while(parent.firstChild){
     parent.firstChild.remove()
   }
+}
+
+function сleanPaginationBtns(){
+  const paginationBtns = document.querySelectorAll('.js-pagination-btn')
+  paginationBtns.forEach(btn => {
+    toggleElements(btn, true)
+  })
 }
 
 
@@ -669,6 +694,14 @@ function hiddenAllUsers(){
 
 function showPagination(){
   toggleElements(pagination, false)
+}
+
+function showPaginationBtns(){
+  const pagintationBtns = document.querySelectorAll('.js-pagination-btn')
+
+  pagintationBtns.forEach(btn => {
+    toggleElements(btn, false)
+  })
 }
 
 function hiddenPagination(){
