@@ -441,6 +441,7 @@ img{
   width: 100%;
   min-height: 50px;
   margin-bottom: 50px;
+  margin-top: 50px;
 }
 
 .pagination__inner{
@@ -484,6 +485,9 @@ img{
   margin-left: 10px;
 }
 
+.show-more__btn{
+  margin: 0 auto 50px;
+}
 
 
 .hidden{

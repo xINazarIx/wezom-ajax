@@ -20,12 +20,13 @@ const btnSortByABC = document.querySelector('.js-sort-abc-btn') // Кнопка 
 const cleanFiltersBtn = document.querySelector('.js-clean-filters') // Кнопка очиски фильтров
 const btnsSortByAge = document.querySelectorAll('.js-sort-age-btn')
 
+
 const checkGender = document.querySelector('.js-gender')
 const checkAbc = document.querySelector('.js-abc')
 const checkAge = document.querySelector('.js-age')
-let checkPhoneCodes = [];
 
-const dataOnPage = 5
+
+let checkPhoneCodes = [];
 let dataUsers; // Когда будет запрос на сервер в переменную запишуться данные.
 let dataUsersSorted; // Когда будет выбран фильтр сюда запишуться данные
 
@@ -188,13 +189,16 @@ function searchUsers(input, arr){ // Функия поиска пользова�
   input.oninput = function(){ // Срабатывает при изменении инпута
 
     cleanFiltersLocal()
-
+    
 
     let result = [] // Массив выходных данных
 
     cleanUsers() // Ф-ция чистит всех пользователей
 
     let value = input.value // Получаем значение инпута
+
+    value == '' ? hiddenAllUsers() : showAllUsers()
+
     value = value.toLowerCase().replace(/\s+/g, '') // Делаем значение в нижнем регистре, без пробелов 
 
     arr.forEach(card => { // Проходимся по всем объектам
@@ -210,7 +214,7 @@ function searchUsers(input, arr){ // Функия поиска пользова�
       }
     })
 
-    createPage(result, 1)
+    createPage(result)
 
 
     if(value == ''){
@@ -225,16 +229,16 @@ function searchUsers(input, arr){ // Функия поиска пользова�
 
 btnsSortByGender.forEach(btn => { // Ф-ция сортировки по гендеру
   btn.addEventListener('click', function(){
-
     let gender = this.dataset.gender // Получаем дата-атрибут гендера который нужно отсортировать
     checkGender.dataset.gender = gender // Устанавливает кнопке сортиров по алфавиту гендер который выбран
 
-    checkFilters(this)
+    checkFilters()
   })
 })
 
 btnSortByABC.addEventListener('click', function(){
-  checkFilters(this)
+
+  checkFilters()
 })
 
 
@@ -250,6 +254,7 @@ btnsSortByAge.forEach(btn => {
 function checkFilters(){ // Главная ф-ция фильтров, запускается при нажатии на любой фильтр
   cleanUsers()
   deleteSearchInput()
+
   dataUsersSorted = [...dataUsers]
 
   if(checkGender.dataset.gender != 'default'){
@@ -267,6 +272,10 @@ function checkFilters(){ // Главная ф-ция фильтров, запу�
 
   if(checkPhoneCodes > 0){
     dataUsersSorted = [...sortByPhoneCode(dataUsersSorted)]
+  }
+
+  if(dataCheck == 'default'){
+    hiddenAllUsers()
   }
 
   createPage(dataUsersSorted)
@@ -328,6 +337,7 @@ function sortByAge(age, arr){ // Ф-ция фолтра по возрасту, �
 cleanFiltersBtn.addEventListener('click', function(){
   cleanUsers() // Ф-ция удаление пользователей
   cleanFiltersGlobal() // Ф-ция удаления фильтров
+  cleanUserRender()
   createPage(dataUsers) // Создаём пользоветелей без фильтров
 })
 
@@ -336,11 +346,13 @@ function cleanFiltersLocal(){
   document.querySelector('.js-radio-age-default').checked = true
   document.querySelector('.js-sort-abc-btn').checked = false
   document.querySelector('.js-radio-gender-default').checked = true
+  document.querySelector('.js-radio-showUsers-default').checked = true
 
   cleanPhoneCodeFilters()
 
   checkAge.dataset.age = 'default'
   checkGender.dataset.gender = 'default'
+  checkShowUsers.dataset.users = 'default'
 
 
   dataUsersSorted = undefined // Делаем сортированные дынные пустыми
@@ -376,6 +388,8 @@ function toggleElements(elem, flag){
 function toggleBtnSortByABC(flag){
   btnSortByABC.classList.toggle('filters__sort-abc--active', flag)
 }
+
+
 
 //==================================================================================================//
 
@@ -485,6 +499,7 @@ function sortByPhoneCode(arr){
 
 function cleanPhoneCodeFilters(){
   const btns = document.querySelectorAll('.js-sort-phoneCode-btn')
+
   btns.forEach(btn => {
     btn.checked = false
   })
@@ -494,83 +509,98 @@ function cleanPhoneCodeFilters(){
 
 //================================pagination======================================//
 
+const showMoreBtn = document.querySelector('.js-show-more')
+const showUsersRadios = document.querySelectorAll('.js-sortUsersShow')
 const pagination = document.querySelector('.js-pagination')
 
-let page = 1;
+const currentPage = document.querySelector('.js-pagination-inner')
+
+let checkShowUsers = document.querySelector('.js-showUsers')
+let dataCheck = checkShowUsers.dataset.users
+
+let userShowed = 6;
+
+showUsersRadios.forEach(btn => {
+  btn.addEventListener('click', function(){
+    pageDefault()
+    changeNumberUsersOnPage(btn)
+    deleteSearchInput()
+  })
+})
+
+showMoreBtn.addEventListener('click', function(){
+  userShowed = userShowed + 6
+  dataUsersSorted == undefined ? createPage(dataUsers) : createPage(dataUsersSorted)
+})
+
+function pageDefault(){
+  currentPage.dataset.currentpage = 1
+}
 
 function createPage(arr){
-  toggleElements(pagination, false)
-  cleanPaginationBtns()
   cleanUsers()
+  cleanPagintationBtns()
+  let defaultArr = [...arr]
+  
+  dataCheck = checkShowUsers.dataset.users
+
+  if(dataCheck == 'default'){
+
+    arr = renderUsers(arr)
+    arr.length >= defaultArr.length ? toggleElements(showMoreBtn, true) : toggleElements(showMoreBtn, false)
+
+  }else if(dataCheck == 'all'){
+    
+  }
+  else{
+    toggleElements(showMoreBtn, true)
+    let dataOnPage = parseInt(dataCheck)
+    arr = createGlobalPagination(arr, dataOnPage)
+  }
+
+
+  createUsers(arr)
+}
+
+function createGlobalPagination(arr, dataOnPage){
+
+
+  let page = currentPage.dataset.currentpage
   console.log(page)
-  let countOfBtns = Math.ceil(arr.length / dataOnPage)
+  console.log(currentPage.dataset.currentpage)
+  let countPaginationBtns = Math.ceil(arr.length / dataOnPage)
   let start = (page - 1) * dataOnPage
   let end = start + dataOnPage
   arr = arr.slice(start,end)
 
-  createPaginationBtns(countOfBtns)
-  togglePaginationBtns(document.querySelector('.js-pagination-link[data-page="'+page+'"]'))
-  createUsers(arr)
+  createPaginationBtns(countPaginationBtns)
+  switchPaginationLinks()
 
-  const paginationLinks = document.querySelectorAll('.js-pagination-link')
-  const paginationBtns = document.querySelectorAll('.js-pagination-btn')
-
-  paginationLinks.forEach(btn => {
-    btn.addEventListener('click', function clickPaginationLink(){
-      page = btn.dataset.page
-      dataUsersSorted == undefined ? createPage(dataUsers) : createPage(dataUsersSorted)
-      btn.removeEventListener('click', clickPaginationLink)
-    })
-  })
-
-  paginationBtns.forEach(btn => {
-    toggleElements(btn, false)
-
-    btn.addEventListener('click', function clickPaginationBtn(){
-      if(btn.dataset.page == 'next'){
-        dataUsersSorted == undefined ? createPage(dataUsers, ++page) : createPage(dataUsersSorted, ++page)
-        btn.removeEventListener('click', clickPaginationBtn)
-      }
-    })
-  })
+  return arr
 }
 
-function paginationLinks(page){
-  console.log(page)
+function switchPaginationLinks(){
+  let activeLink = currentPage.dataset.currentpage
   const paginationLinks = document.querySelectorAll('.js-pagination-link')
-  const paginationBtns = document.querySelectorAll('.js-pagination-btn')
-
-  paginationLinks.forEach(btn => {
-    
-    btn.addEventListener('click', function clickPaginationLink(){
-      page = btn.dataset.page
-
-      dataUsersSorted == undefined ? createPage(dataUsers, page) : createPage(dataUsersSorted, page)
-
-      btn.removeEventListener('click', clickPaginationLink)
+  if(paginationLinks.length != 0){
+    paginationLinks.forEach(link => {
+      link.classList.remove('pagination__link--active')
     })
 
-  })
-
-  paginationBtns.forEach(btn => {
-    toggleElements(btn, false)
-
-    btn.addEventListener('click', function clickPaginationBtn(){
-      if(btn.dataset.page == 'next'){
-        dataUsersSorted == undefined ? createPage(dataUsers, ++page) : createPage(dataUsersSorted, ++page)
-
-        btn.removeEventListener('click', clickPaginationBtn)
-      }
-    })
-  })
+    document.querySelector('.js-pagination-link[data-page="'+activeLink+'"]').classList.add('pagination__link--active')
+  }
 }
 
-function createPaginationBtns(countOfBtns){
+
+
+function createPaginationBtns(countPaginationBtns){
+  showPagination()
+
   const parent = document.querySelector('.js-pagination-inner')
   const template = document.querySelector('#pagination-links')
   let frag = document.createDocumentFragment()
 
-  for(let i = 1; i <= countOfBtns; i++){
+  for(let i = 1; i <= countPaginationBtns; i++){
     let btn = template.content.cloneNode(true)
     btn.querySelector('.js-pagination-link').textContent = i
     btn.querySelector('.js-pagination-link').dataset.page = i
@@ -578,23 +608,70 @@ function createPaginationBtns(countOfBtns){
     frag.appendChild(btn)
   }
 
-  parent.appendChild(frag)
+  if(countPaginationBtns != 1){
+    parent.appendChild(frag)
+  }
+
+  switchPages()
 }
 
 
-function cleanPaginationBtns(){
+
+
+function switchPages(){
+  const paginationsLinks = document.querySelectorAll('.js-pagination-link')
+
+  paginationsLinks.forEach(btn => {
+    btn.addEventListener('click', function(){
+      currentPage.dataset.currentpage = btn.dataset.page
+      dataUsersSorted == undefined ? createPage(dataUsers) : createPage(dataUsersSorted)
+    })
+  })
+}
+
+
+
+function cleanPagintationBtns(){
   const parent = document.querySelector('.js-pagination-inner') // Вопрос, как можно более оптимизированно собрать всех и удалить
   while(parent.firstChild){
     parent.firstChild.remove()
   }
 }
 
-function togglePaginationBtns(btn){
-  const btns = document.querySelectorAll('.js-pagination-link')
-  btns.forEach(btn => {
-    btn.classList.remove('pagination__link--active')
-  })
 
-  btn.classList.add('pagination__link--active')
+
+function changeNumberUsersOnPage(btn){
+  checkShowUsers.dataset.users = btn.dataset.users
+  dataUsersSorted == undefined ? createPage(dataUsers) : createPage(dataUsersSorted)
+}
+
+
+function renderUsers(arr){
+  cleanUsers()
+  arr = arr.slice(0, userShowed)
+  return arr
+}
+
+function cleanUserRender(){
+  cleanUsers()
+  userShowed = 6
+}
+
+function showAllUsers(){
+  toggleElements(showMoreBtn, true)
+  checkShowUsers.dataset.users = 'all'
+}
+
+function hiddenAllUsers(){
+  userShowed = 6
+  checkShowUsers.dataset.users = 'default'
+}
+
+function showPagination(){
+  toggleElements(pagination, false)
+}
+
+function hiddenPagination(){
+  toggleElements(pagination, true)
 }
 

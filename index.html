@@ -90,19 +90,57 @@
           </div>
         </div>
 
-  
-      </div>
-      <div class="users js-users">
-        <div class="error hidden js-error">
-          <div class="error__text"></div>
+        <div class="sidebar__widget">
+          <div class="sidebar__widget-title">
+            Отобразить пользователей
+          </div>
+
+          <div class="sidebar__widget-inner js-showUsers" data-users='default'>
+            <label class='radio'>
+              <input  class='radio__real js-sortUsersShow' type="radio" name='users' data-users="6">
+              <span class='radio__fake'></span>
+              <span class='radio__text'>6</span>
+            </label>
+
+            <label class='radio'>
+              <input  class='radio__real js-sortUsersShow' type="radio" name='users' data-users="12">
+              <span class='radio__fake'></span>
+              <span class='radio__text'>12</span>
+            </label>
+
+            <label class='radio'>
+              <input  class='radio__real js-sortUsersShow' type="radio" name='users' data-users="18">
+              <span class='radio__fake'></span>
+              <span class='radio__text'>18</span>
+            </label>
+
+            <label class='radio'>
+              <input  class='radio__real js-sortUsersShow js-radio-showUsers-default' type="radio" name='users' data-users="default" checked>
+              <span class='radio__fake'></span>
+              <span class='radio__text'>Все</span>
+            </label>
+          </div>
         </div>
       </div>
+
+      <div class="users-wrapper">
+        <div class="users js-users">
+          <div class="error hidden js-error">
+            <div class="error__text"></div>
+          </div>
+        </div>
+        <button class="btn show-more__btn hidden js-show-more">Показать ещё</button>
+      </div>
+  
+   
     </div>
+
+  
 
     <div class="pagination hidden js-pagination">
       <a href='#' class="pagination__btn hidden js-pagination-btn" data-page='prev'><</button>
       <a href='#' class="pagination__btn hidden js-pagination-btn" data-page='start'>...</a>
-      <div class="pagination__inner js-pagination-inner"></div>
+      <div class="pagination__inner js-pagination-inner" data-currentpage='1'></div>
       <a href='#' class="pagination__btn hidden js-pagination-btn" data-page='last'>...</a>
       <a href='#' class="pagination__btn hidden js-pagination-btn" data-page='next'>></a>
     </div>
