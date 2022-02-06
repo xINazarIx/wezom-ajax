@@ -278,6 +278,7 @@ function checkFilters(){ // Главная ф-ция фильтров, запу�
     hiddenAllUsers()
   }
 
+  pageDefault()
   createPage(dataUsersSorted)
 }
 
@@ -591,8 +592,9 @@ function switchPaginationLinks(){
     paginationLinks.forEach(link => {
       link.classList.remove('pagination__link--active')
     })
-
     document.querySelector('.js-pagination-link[data-page="'+activeLink+'"]').classList.add('pagination__link--active')
+  }else{
+    hiddenPaginationBtns()
   }
 }
 
@@ -701,6 +703,14 @@ function showPaginationBtns(){
 
   pagintationBtns.forEach(btn => {
     toggleElements(btn, false)
+  })
+}
+
+function hiddenPaginationBtns(){
+  const pagintationBtns = document.querySelectorAll('.js-pagination-btn')
+
+  pagintationBtns.forEach(btn => {
+    toggleElements(btn, true)
   })
 }
 
