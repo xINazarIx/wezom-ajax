@@ -14,7 +14,7 @@ const error = document.querySelector('.js-error') // Блок ошибки
 const errorText = document.querySelector('.js-error').firstElementChild // Текст ошибки
 
 const sidebar = document.querySelector('.js-sidebar')
- 
+
 const btnsSortByGender = document.querySelectorAll('.js-sort-gender-btn') // Кнопки выбора гендера
 const btnSortByABC = document.querySelector('.js-sort-abc-btn') // Кнопка сортировки по алфавиту
 const cleanFiltersBtn = document.querySelector('.js-clean-filters') // Кнопка очиски фильтров
@@ -38,25 +38,25 @@ loadUsersBtn.addEventListener('click', () => {
   toggleElements(preloader, false) // Показывает лоадер
 
   const promise = getUsers(randomInteger(95, 100))
-  .then(response => response.json())
-  .then(data => {
-    dataUsers = data.results // Записываем данные в переменную
+    .then(response => response.json())
+    .then(data => {
+      dataUsers = data.results // Записываем данные в переменную
 
-    createPage(dataUsers)
+      createPage(dataUsers)
 
-    createFilters()
-    createSidebar()
+      createFilters()
+      createSidebar()
 
 
-    createFiltersPhoneCode(dataUsers)
-    checkNumberAges(dataUsers) // Ф-ция отключения фильтров где выборка 0
-    checkNumberGenders(dataUsers) // Ф-ция отключения фильтров где выборка 0
-  })
+      createFiltersPhoneCode(dataUsers)
+      checkNumberAges(dataUsers) // Ф-ция отключения фильтров где выборка 0
+      checkNumberGenders(dataUsers) // Ф-ция отключения фильтров где выборка 0
+    })
 })
 
-function createUsers(arr){ // Функция построения пользователей которая принимает массив объектов
+function createUsers(arr) { // Функция построения пользователей которая принимает массив объектов
   toggleElements(preloader, true) // Выключаем прилоадер
-  
+
   let frag = document.createDocumentFragment() // Обёрка для user
 
   arr.forEach(elem => { // Цикл по результату запроса
@@ -64,11 +64,11 @@ function createUsers(arr){ // Функция построения пользов
 
     user.querySelector('.js-user-card__img').src = elem.picture.large
     user.querySelector('.js-user-card__name').textContent = ''
-    
+
     for (let key in elem.name) {
       user.querySelector('.js-user-card__name').textContent += ' ' + elem.name[key]
     }
-    
+
     user.querySelector('.js-user-card__gender').textContent = elem.gender
     user.querySelector('.js-user-card__gender').dataset.gender = elem.gender
     user.querySelector('.js-user-card__number').textContent = elem.phone
@@ -88,18 +88,18 @@ function createUsers(arr){ // Функция построения пользов
   createStatistic(arr) // Ф-ция которая создаёт статистику
 }
 
-function createFilters(){
+function createFilters() {
   toggleElements(filters, false)
 }
 
-function createSidebar(){
+function createSidebar() {
   toggleElements(sidebar, false)
 }
 
 //===============================================statistic====================================///
-  
 
-function createStatistic(arr){ // Ф-ция построенния статистики
+
+function createStatistic(arr) { // Ф-ция построенния статистики
   toggleElements(statistic, false) // Показываем блок статистики
   document.querySelector('.js-statistic__amount').textContent = arr.length // Выводим количество пользователей
   document.querySelector('.js-statistic__female').textContent = countGender(arr).female // Стучимся в ф-цию и получаем объект с ключем
@@ -111,7 +111,7 @@ function createStatistic(arr){ // Ф-ция построенния статис�
   createNation(arr) // Запускаем ф-ция построения блока национальностей
 }
 
-function countGender(arr){ // Ф-ция подсчёта м/ж
+function countGender(arr) { // Ф-ция подсчёта м/ж
   let obj = {
     male: 0,
     female: 0,
@@ -121,12 +121,12 @@ function countGender(arr){ // Ф-ция подсчёта м/ж
   arr.forEach(card => {
     card.gender == 'male' ? obj.male++ : obj.female++
   })
-  
-  if(obj.male > obj.female){
+
+  if (obj.male > obj.female) {
     obj.total = 'Мужчин'
-  }else if(obj.male == obj.female){
+  } else if (obj.male == obj.female) {
     obj.total = 'Поровну'
-  }else if(obj.male < obj.female){
+  } else if (obj.male < obj.female) {
     obj.total = 'Женщин'
   }
 
@@ -134,7 +134,7 @@ function countGender(arr){ // Ф-ция подсчёта м/ж
 }
 
 
-function createNation(arr){ // Ф-ция создания блока национальностей
+function createNation(arr) { // Ф-ция создания блока национальностей
   cleanNation() // Чистим на случай если блок был уже построен
   let obj = countNations(arr) // Сохраняем результат выполнения ф-ции это объект с ключом националности и количество
 
@@ -142,16 +142,16 @@ function createNation(arr){ // Ф-ция создания блока нацио�
   const template = document.querySelector('#statistic-nation')
   let frag = document.createDocumentFragment()
 
-  for(let key in obj){
+  for (let key in obj) {
     let elem = template.content.cloneNode(true)
     elem.querySelector('.js-statistic__nation-text').textContent = key
 
-    if(obj[key] == 1){
-      elem.querySelector('.js-statistic__nation-num').textContent =': ' + obj[key] + '-' + 'Пользователь'
-    }else if(obj[key] >= 2 && obj[key] <= 4){
-      elem.querySelector('.js-statistic__nation-num').textContent =': ' + obj[key] + '-' + 'Пользователя'
-    }else if(obj[key] > 4){
-      elem.querySelector('.js-statistic__nation-num').textContent =': ' + obj[key] + '-' + 'Пользователей'
+    if (obj[key] == 1) {
+      elem.querySelector('.js-statistic__nation-num').textContent = ': ' + obj[key] + '-' + 'Пользователь'
+    } else if (obj[key] >= 2 && obj[key] <= 4) {
+      elem.querySelector('.js-statistic__nation-num').textContent = ': ' + obj[key] + '-' + 'Пользователя'
+    } else if (obj[key] > 4) {
+      elem.querySelector('.js-statistic__nation-num').textContent = ': ' + obj[key] + '-' + 'Пользователей'
     }
 
     frag.appendChild(elem)
@@ -160,19 +160,19 @@ function createNation(arr){ // Ф-ция создания блока нацио�
   parent.appendChild(frag)
 }
 
-function countNations(arr){ // Ф-ция подсчёта национальностей
+function countNations(arr) { // Ф-ция подсчёта национальностей
   let result = {}
 
-  for(let obj of arr){
+  for (let obj of arr) {
     obj.nat in result ? result[obj.nat]++ : result[obj.nat] = 1
   }
 
   return result
 }
 
-function cleanNation(){ // Ф-ция очистки блока национлайьностей 
+function cleanNation() { // Ф-ция очистки блока национлайьностей 
   const parent = document.querySelector('.js-statistic__nations')
-  while(parent.firstChild){ // Вопрос как сделать более оптимизированно?
+  while (parent.firstChild) { // Вопрос как сделать более оптимизированно?
     parent.firstChild.remove()
   }
 }
@@ -180,16 +180,16 @@ function cleanNation(){ // Ф-ция очистки блока национла�
 
 //====================================filters=================================================//
 
-filtersInput.addEventListener('click', function(){
+filtersInput.addEventListener('click', function () {
   searchUsers(this, dataUsers) // Запускаем ф-ция сортировки которая принимает инпут и мейн данные т.к приоритет наивысший
 })
 
 
-function searchUsers(input, arr){ // Функия поиска пользователей которая принимает инпут и массив объектов
-  input.oninput = function(){ // Срабатывает при изменении инпута
+function searchUsers(input, arr) { // Функия поиска пользователей которая принимает инпут и массив объектов
+  input.oninput = function () { // Срабатывает при изменении инпута
 
     cleanFiltersLocal()
-    
+
 
     let result = [] // Массив выходных данных
 
@@ -205,11 +205,11 @@ function searchUsers(input, arr){ // Функия поиска пользова�
       let name = card.name.title + card.name.first + card.name.last // Соединяем имя
       let phone = card.phone
       let email = card.email
-      
+
       name = name.toLowerCase()
       phone = phone.replace(/\s+/g, '').replace(/[^0-9]/g, '');
-    
-      if(name.search(value) != -1 || phone.search(value) != -1 || email.search(value) != -1){
+
+      if (name.search(value) != -1 || phone.search(value) != -1 || email.search(value) != -1) {
         result.push(card) // Если данные сходятся добавляем в result
       }
     })
@@ -217,9 +217,9 @@ function searchUsers(input, arr){ // Функия поиска пользова�
     createPage(result)
 
 
-    if(value == ''){
+    if (value == '') {
       toggleInputFilters(false) // Убираем у инпута поиска класс актив
-    }else{
+    } else {
       toggleInputFilters(true) // Добавлям  класс актив у инпута поиска
     }
   }
@@ -228,7 +228,7 @@ function searchUsers(input, arr){ // Функия поиска пользова�
 
 
 btnsSortByGender.forEach(btn => { // Ф-ция сортировки по гендеру
-  btn.addEventListener('click', function(){
+  btn.addEventListener('click', function () {
     let gender = this.dataset.gender // Получаем дата-атрибут гендера который нужно отсортировать
     checkGender.dataset.gender = gender // Устанавливает кнопке сортиров по алфавиту гендер который выбран
 
@@ -236,14 +236,14 @@ btnsSortByGender.forEach(btn => { // Ф-ция сортировки по ген�
   })
 })
 
-btnSortByABC.addEventListener('click', function(){
+btnSortByABC.addEventListener('click', function () {
 
   checkFilters()
 })
 
 
 btnsSortByAge.forEach(btn => {
-  btn.addEventListener('click', function(){
+  btn.addEventListener('click', function () {
     let age = this.dataset.age
     checkAge.dataset.age = age
     checkFilters()
@@ -251,30 +251,30 @@ btnsSortByAge.forEach(btn => {
 })
 
 
-function checkFilters(){ // Главная ф-ция фильтров, запускается при нажатии на любой фильтр
+function checkFilters() { // Главная ф-ция фильтров, запускается при нажатии на любой фильтр
   cleanUsers()
   deleteSearchInput()
 
   dataUsersSorted = [...dataUsers]
 
-  if(checkGender.dataset.gender != 'default'){
+  if (checkGender.dataset.gender != 'default') {
     dataUsersSorted = [...sortByGender(checkGender.dataset.gender, dataUsersSorted)]
   }
 
-  
-  if(btnSortByABC.checked){
+
+  if (btnSortByABC.checked) {
     dataUsersSorted = [...sortByAbc(dataUsersSorted)]
   }
 
-  if(checkAge.dataset.age != 'default'){
+  if (checkAge.dataset.age != 'default') {
     dataUsersSorted = [...sortByAge(checkAge.dataset.age, dataUsersSorted)]
   }
 
-  if(checkPhoneCodes > 0){
+  if (checkPhoneCodes > 0) {
     dataUsersSorted = [...sortByPhoneCode(dataUsersSorted)]
   }
 
-  if(dataCheck == 'default'){
+  if (dataCheck == 'default') {
     hiddenAllUsers()
   }
 
@@ -290,7 +290,7 @@ function sortByGender(gender, arr) { // Ф-ция сортировки по ге
   let result = [] // Массив выходных данных
 
   arr.forEach(card => {
-    if(card.gender == gender || gender == 'default'){
+    if (card.gender == gender || gender == 'default') {
       result.push(card)
     }
   })
@@ -302,9 +302,9 @@ function sortByGender(gender, arr) { // Ф-ция сортировки по ге
 
 
 
-function sortByAbc(arr){ // Ф-ция сортировки по алфавиту
+function sortByAbc(arr) { // Ф-ция сортировки по алфавиту
   let result = [...arr]  // Копируем массив
-  result.sort((a,b) => a.name.title + a.name.first + a.name.last > b.name.title + b.name.first + b.name.last ? 1 : -1)
+  result.sort((a, b) => a.name.title + a.name.first + a.name.last > b.name.title + b.name.first + b.name.last ? 1 : -1)
 
   return result
 }
@@ -313,18 +313,18 @@ function sortByAbc(arr){ // Ф-ция сортировки по алфавиту
 
 
 
-function sortByAge(age, arr){ // Ф-ция фолтра по возрасту, принимает возраст который сортируем
+function sortByAge(age, arr) { // Ф-ция фолтра по возрасту, принимает возраст который сортируем
 
   let result = [...arr]
 
   arr.forEach(card => {
-    if(age == 'js-young'){
+    if (age == 'js-young') {
       result = result.filter(card => card.dob.age <= 34)
-    }else if(age == 'js-adult'){
+    } else if (age == 'js-adult') {
       result = result.filter(card => card.dob.age >= 35 && card.dob.age <= 39)
-    }else if(age == 'js-near-old'){
+    } else if (age == 'js-near-old') {
       result = result.filter(card => card.dob.age >= 40 && card.dob.age <= 44)
-    }else if(age == 'js-old'){
+    } else if (age == 'js-old') {
       result = result.filter(card => card.dob.age >= 45)
     }
   })
@@ -335,7 +335,7 @@ function sortByAge(age, arr){ // Ф-ция фолтра по возрасту, �
 
 
 
-cleanFiltersBtn.addEventListener('click', function(){
+cleanFiltersBtn.addEventListener('click', function () {
   cleanUsers() // Ф-ция удаление пользователей
   cleanFiltersGlobal() // Ф-ция удаления фильтров
   cleanUserRender()
@@ -343,7 +343,7 @@ cleanFiltersBtn.addEventListener('click', function(){
 })
 
 
-function cleanFiltersLocal(){
+function cleanFiltersLocal() {
   document.querySelector('.js-radio-age-default').checked = true
   document.querySelector('.js-sort-abc-btn').checked = false
   document.querySelector('.js-radio-gender-default').checked = true
@@ -360,33 +360,33 @@ function cleanFiltersLocal(){
 }
 
 
-function cleanFiltersGlobal(){ // Ф-ция очистки фильтров
+function cleanFiltersGlobal() { // Ф-ция очистки фильтров
   cleanFiltersLocal()
   deleteSearchInput()
 }
 
-function cleanUsers(){  //  Ф-ция удаления пользователей
+function cleanUsers() {  //  Ф-ция удаления пользователей
   const parent = document.querySelector('.js-users') // Вопрос, как можно более оптимизированно собрать всех и удалить
-  while(parent.firstChild){
+  while (parent.firstChild) {
     parent.firstChild.remove()
   }
 }
 
 //==================================================================================================//
 
-function toggleInputFilters(flag){
+function toggleInputFilters(flag) {
   filtersInput.classList.toggle('filters__search--active', flag)
 }
 
-function toggleBtnFilters(btn, flag){
+function toggleBtnFilters(btn, flag) {
   btn.classList.toggle('filters__sort-gender--active', flag)
 }
 
-function toggleElements(elem, flag){
+function toggleElements(elem, flag) {
   elem.classList.toggle('hidden', flag)
 }
 
-function toggleBtnSortByABC(flag){
+function toggleBtnSortByABC(flag) {
   btnSortByABC.classList.toggle('filters__sort-abc--active', flag)
 }
 
@@ -394,54 +394,54 @@ function toggleBtnSortByABC(flag){
 
 //==================================================================================================//
 
-function checkNumberAges(arr){ // Ф-ция отключения фильтра если выборка 0
+function checkNumberAges(arr) { // Ф-ция отключения фильтра если выборка 0
   btnsSortByAge.forEach(btn => {
     let result = [...arr]
- 
-    if(btn.dataset.age == 'js-young'){
+
+    if (btn.dataset.age == 'js-young') {
       result = result.filter(card => card.dob.age <= 34)
 
-      if(result.length == 0){
+      if (result.length == 0) {
         btn.disabled = true
       }
-    }else if(btn.dataset.age == 'js-adult'){
+    } else if (btn.dataset.age == 'js-adult') {
       result = result.filter(card => card.dob.age >= 35 && card.dob.age <= 39)
 
-      if(result.length == 0){
+      if (result.length == 0) {
         btn.disabled = true
       }
-    }else if(btn.dataset.age == 'js-near-old'){
+    } else if (btn.dataset.age == 'js-near-old') {
       result = result.filter(card => card.dob.age >= 40 && card.dob.age <= 44)
 
-      if(result.length == 0){
+      if (result.length == 0) {
         btn.disabled = true
       }
 
-    }else if(btn.dataset.age == 'js-old'){
+    } else if (btn.dataset.age == 'js-old') {
       result = result.filter(card => card.dob.age >= 45)
 
-      if(result.length == 0){
+      if (result.length == 0) {
         btn.disabled = true
       }
     }
   })
 }
 
-function checkNumberGenders(arr){ // Ф-ция отключения выборки если выборка 0
+function checkNumberGenders(arr) { // Ф-ция отключения выборки если выборка 0
   btnsSortByGender.forEach(btn => {
     let obj = countGender(arr)
-    if(obj[btn.dataset.gender] == 0){
+    if (obj[btn.dataset.gender] == 0) {
       btn.disabled = true
     }
   })
 }
 
-function deleteSearchInput(){
+function deleteSearchInput() {
   filtersInput.value = ''
   toggleInputFilters(false)
 }
 
-function createFiltersPhoneCode(arr){
+function createFiltersPhoneCode(arr) {
   const parent = document.querySelector('.js-phone-code')
   let template = document.querySelector('#sidebar-label')
   let frag = document.createDocumentFragment()
@@ -449,8 +449,8 @@ function createFiltersPhoneCode(arr){
   let checkObj = {}
 
   arr.forEach(obj => {
-    
-    if(obj.nat in checkObj == false){
+
+    if (obj.nat in checkObj == false) {
       checkObj[obj.nat] = 1
       let filter = template.content.cloneNode(true)
       filter.querySelector('.js-sort-code-text').textContent = obj.nat
@@ -464,32 +464,32 @@ function createFiltersPhoneCode(arr){
   gatherPhoneCodeBtns()
 }
 
-function gatherPhoneCodeBtns(){
+function gatherPhoneCodeBtns() {
   const btns = document.querySelectorAll('.js-sort-phoneCode-btn')
 
   btns.forEach(btn => {
-    btn.addEventListener('click', function(){
+    btn.addEventListener('click', function () {
       btn.checked ? checkPhoneCodes++ : checkPhoneCodes--
       checkFilters()
     })
   })
 }
 
-function sortByPhoneCode(arr){
+function sortByPhoneCode(arr) {
   const btns = document.querySelectorAll('.js-sort-phoneCode-btn')
 
   let result = []
   let codes = []
 
   btns.forEach(btn => {
-    if(btn.checked){
+    if (btn.checked) {
       codes.push(btn.dataset.code)
     }
   })
 
   codes.forEach(code => {
     arr.forEach(card => {
-      if(code == card.nat){
+      if (code == card.nat) {
         result.push(card)
       }
     })
@@ -498,7 +498,7 @@ function sortByPhoneCode(arr){
   return result
 }
 
-function cleanPhoneCodeFilters(){
+function cleanPhoneCodeFilters() {
   const btns = document.querySelectorAll('.js-sort-phoneCode-btn')
 
   btns.forEach(btn => {
@@ -522,40 +522,40 @@ let dataCheck = checkShowUsers.dataset.users
 let userShowed = 6;
 
 showUsersRadios.forEach(btn => {
-  btn.addEventListener('click', function(){
+  btn.addEventListener('click', function () {
     pageDefault()
     changeNumberUsersOnPage(btn)
     deleteSearchInput()
   })
 })
 
-showMoreBtn.addEventListener('click', function(){
+showMoreBtn.addEventListener('click', function () {
   userShowed = userShowed + 6
   dataUsersSorted == undefined ? createPage(dataUsers) : createPage(dataUsersSorted)
 })
 
-function pageDefault(){
+function pageDefault() {
   currentPage.dataset.currentpage = 1
 }
 
-function createPage(arr){
+function createPage(arr) {
   cleanUsers()
   cleanPaginationLinks()
   сleanPaginationBtns()
 
   let defaultArr = [...arr]
-  
+
   dataCheck = checkShowUsers.dataset.users
 
-  if(dataCheck == 'default'){
+  if (dataCheck == 'default') {
 
     arr = renderUsers(arr)
     arr.length >= defaultArr.length ? toggleElements(showMoreBtn, true) : toggleElements(showMoreBtn, false)
 
-  }else if(dataCheck == 'all'){
-    
+  } else if (dataCheck == 'all') {
+
   }
-  else{
+  else {
     toggleElements(showMoreBtn, true)
     let dataOnPage = parseInt(dataCheck)
     arr = createGlobalPagination(arr, dataOnPage)
@@ -565,18 +565,13 @@ function createPage(arr){
   createUsers(arr)
 }
 
-function createGlobalPagination(arr, dataOnPage){
-
-
+function createGlobalPagination(arr, dataOnPage) {
   let page = currentPage.dataset.currentpage
-
-  console.log('Page:', page, typeof(page))
-  console.log('CurrentPage:', currentPage.dataset.currentpage, typeof(currentPage.dataset.currentpage))
 
   let countPaginationBtns = Math.ceil(arr.length / dataOnPage)
   let start = (page - 1) * dataOnPage
   let end = start + dataOnPage
-  arr = arr.slice(start,end)
+  arr = arr.slice(start, end)
 
   createPaginationBtns(countPaginationBtns)
   switchPaginationLinks()
@@ -584,23 +579,23 @@ function createGlobalPagination(arr, dataOnPage){
   return arr
 }
 
-function switchPaginationLinks(){
+function switchPaginationLinks() {
   let activeLink = currentPage.dataset.currentpage
   const paginationLinks = document.querySelectorAll('.js-pagination-link')
 
-  if(paginationLinks.length != 0){
+  if (paginationLinks.length != 0) {
     paginationLinks.forEach(link => {
       link.classList.remove('pagination__link--active')
     })
-    document.querySelector('.js-pagination-link[data-page="'+activeLink+'"]').classList.add('pagination__link--active')
-  }else{
+    document.querySelector('.js-pagination-link[data-page="' + activeLink + '"]').classList.add('pagination__link--active')
+  } else {
     hiddenPaginationBtns()
   }
 }
 
 
 
-function createPaginationBtns(countPaginationBtns){
+function createPaginationBtns(countPaginationBtns) {
   showPagination()
   showPaginationBtns()
 
@@ -608,7 +603,7 @@ function createPaginationBtns(countPaginationBtns){
   const template = document.querySelector('#pagination-links')
   let frag = document.createDocumentFragment()
 
-  for(let i = 1; i <= countPaginationBtns; i++){
+  for (let i = 1; i <= countPaginationBtns; i++) {
     let btn = template.content.cloneNode(true)
     btn.querySelector('.js-pagination-link').textContent = i
     btn.querySelector('.js-pagination-link').dataset.page = i
@@ -616,7 +611,7 @@ function createPaginationBtns(countPaginationBtns){
     frag.appendChild(btn)
   }
 
-  if(countPaginationBtns != 1){
+  if (countPaginationBtns != 1) {
     parent.appendChild(frag)
   }
 
@@ -626,39 +621,79 @@ function createPaginationBtns(countPaginationBtns){
 
 
 
-function switchPages(){
-  const paginationElems = document.querySelectorAll('.js-pagination-elem')
+function switchPages() {
+  pagination.addEventListener('click', paginationEventClick)
+}
 
+function paginationEventClick(e) {
+  const links = document.querySelectorAll('.js-pagination-link')
 
-  paginationElems.forEach(btn => {
-    btn.addEventListener('click', function clickPaginationLink(){
-      if(btn.dataset.page == 'next'){
-        let page = parseInt(currentPage.dataset.currentpage)
-        currentPage.dataset.currentpage = ++page
-        dataUsersSorted == undefined ? createPage(dataUsers) : createPage(dataUsersSorted)
+  let target = e.target
+  if (target.tagName != 'A') return;
 
-        btn.removeEventListener('click', clickPaginationLink)
-      }else{
-        currentPage.dataset.currentpage = btn.dataset.page
-        dataUsersSorted == undefined ? createPage(dataUsers) : createPage(dataUsersSorted)
-        
-        btn.removeEventListener('click', clickPaginationLink)
-      }
-    })
-  })
+  if (target.dataset.page == 'next'){
+    let page = parseInt(currentPage.dataset.currentpage)
 
+    if(page < links.length){
+      currentPage.dataset.currentpage = page + 1 
+      dataUsersSorted == undefined ? createPage(dataUsers) : createPage(dataUsersSorted)
+    }else{
+      e.preventDefault()
+    }
+
+  }else if(target.dataset.page == 'prev'){
+    let page = parseInt(currentPage.dataset.currentpage)
+
+    if(page > 1){
+      currentPage.dataset.currentpage = page - 1
+      dataUsersSorted == undefined ? createPage(dataUsers) : createPage(dataUsersSorted)
+    }else{
+      e.preventDefault()
+    }
+
+  }else if(target.dataset.page == 'start'){
+    let page = parseInt(currentPage.dataset.currentpage)
+
+    if(page != 1){
+      currentPage.dataset.currentpage = 1
+      dataUsersSorted == undefined ? createPage(dataUsers) : createPage(dataUsersSorted)
+    }else{
+      e.preventDefault()
+    }
+
+  }else if(target.dataset.page == 'last'){
+
+    let page = parseInt(currentPage.dataset.currentpage)
+
+    if(page != links.length){
+      currentPage.dataset.currentpage = links.length
+      dataUsersSorted == undefined ? createPage(dataUsers) : createPage(dataUsersSorted)
+    }else{
+      e.preventDefault()
+    }
+
+  }else{
+
+    currentPage.dataset.currentpage = target.dataset.page
+    dataUsersSorted == undefined ? createPage(dataUsers) : createPage(dataUsersSorted)
+    
+  }
+}
+
+function removeEventPagination() {
+  pagination.removeEventListener('click', paginationEventClick)
 }
 
 
 
-function cleanPaginationLinks(){
+function cleanPaginationLinks() {
   const parent = document.querySelector('.js-pagination-inner') // Вопрос, как можно более оптимизированно собрать всех и удалить
-  while(parent.firstChild){
+  while (parent.firstChild) {
     parent.firstChild.remove()
   }
 }
 
-function сleanPaginationBtns(){
+function сleanPaginationBtns() {
   const paginationBtns = document.querySelectorAll('.js-pagination-btn')
   paginationBtns.forEach(btn => {
     toggleElements(btn, true)
@@ -667,38 +702,38 @@ function сleanPaginationBtns(){
 
 
 
-function changeNumberUsersOnPage(btn){
+function changeNumberUsersOnPage(btn) {
   checkShowUsers.dataset.users = btn.dataset.users
   dataUsersSorted == undefined ? createPage(dataUsers) : createPage(dataUsersSorted)
 }
 
 
-function renderUsers(arr){
+function renderUsers(arr) {
   cleanUsers()
   arr = arr.slice(0, userShowed)
   return arr
 }
 
-function cleanUserRender(){
+function cleanUserRender() {
   cleanUsers()
   userShowed = 6
 }
 
-function showAllUsers(){
+function showAllUsers() {
   toggleElements(showMoreBtn, true)
   checkShowUsers.dataset.users = 'all'
 }
 
-function hiddenAllUsers(){
+function hiddenAllUsers() {
   userShowed = 6
   checkShowUsers.dataset.users = 'default'
 }
 
-function showPagination(){
+function showPagination() {
   toggleElements(pagination, false)
 }
 
-function showPaginationBtns(){
+function showPaginationBtns() {
   const pagintationBtns = document.querySelectorAll('.js-pagination-btn')
 
   pagintationBtns.forEach(btn => {
@@ -706,7 +741,7 @@ function showPaginationBtns(){
   })
 }
 
-function hiddenPaginationBtns(){
+function hiddenPaginationBtns() {
   const pagintationBtns = document.querySelectorAll('.js-pagination-btn')
 
   pagintationBtns.forEach(btn => {
@@ -714,7 +749,7 @@ function hiddenPaginationBtns(){
   })
 }
 
-function hiddenPagination(){
+function hiddenPagination() {
   toggleElements(pagination, true)
 }
 
