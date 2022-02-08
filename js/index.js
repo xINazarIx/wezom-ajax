@@ -595,15 +595,40 @@ function switchPaginationLinks() {
 
 
 
-function createPaginationBtns(countPaginationBtns) {
+function createPaginationBtns(countPaginationBtns) { // Количество всех кнопок
   showPagination()
   showPaginationBtns()
+
+  let parentOfBtns = document.querySelector('.js-pagination-inner')
+  parentOfBtns.dataset.pages = countPaginationBtns
+
+  let localCountBtns = 5 // Количество видемых кнопок
 
   const parent = document.querySelector('.js-pagination-inner')
   const template = document.querySelector('#pagination-links')
   let frag = document.createDocumentFragment()
 
-  for (let i = 1; i <= countPaginationBtns; i++) {
+  let page = parseInt(currentPage.dataset.currentpage) // Текущая страница
+
+  let left = (page - Math.floor(localCountBtns / 2)) 
+  let right = (page + Math.floor(localCountBtns / 2))
+
+  if(left < 1){
+    left = 1
+    right = localCountBtns
+  }
+
+  if(right > countPaginationBtns){
+    left = countPaginationBtns - localCountBtns
+    right = countPaginationBtns
+
+    if(left < 1){
+      left = 1
+    }
+  }
+
+
+  for (let i = left; i <= right; i++) {
     let btn = template.content.cloneNode(true)
     btn.querySelector('.js-pagination-link').textContent = i
     btn.querySelector('.js-pagination-link').dataset.page = i
@@ -613,6 +638,24 @@ function createPaginationBtns(countPaginationBtns) {
 
   if (countPaginationBtns != 1) {
     parent.appendChild(frag)
+  }
+
+
+  
+  if(parseInt(currentPage.dataset.currentpage) < 4){
+    toggleElements(document.querySelector('.js-pagination-btn[data-page="start"]'), true)
+  }
+
+  if(parseInt(currentPage.dataset.currentpage) == 1){
+    toggleElements(document.querySelector('.js-pagination-btn[data-page="prev"]'), true)
+  }
+
+  if(parseInt(currentPage.dataset.currentpage) == countPaginationBtns){
+    toggleElements(document.querySelector('.js-pagination-btn[data-page="next"]'), true)
+  }
+
+  if(parseInt(currentPage.dataset.currentpage) >= countPaginationBtns - 2){
+    toggleElements(document.querySelector('.js-pagination-btn[data-page="last"]'), true)
   }
 
   switchPages()
@@ -626,7 +669,7 @@ function switchPages() {
 }
 
 function paginationEventClick(e) {
-  const links = document.querySelectorAll('.js-pagination-link')
+  let countOfBtns = document.querySelector('.js-pagination-inner')
 
   let target = e.target
   if (target.tagName != 'A') return;
@@ -634,7 +677,7 @@ function paginationEventClick(e) {
   if (target.dataset.page == 'next'){
     let page = parseInt(currentPage.dataset.currentpage)
 
-    if(page < links.length){
+    if(page < parseInt(countOfBtns.dataset.pages)){
       currentPage.dataset.currentpage = page + 1 
       dataUsersSorted == undefined ? createPage(dataUsers) : createPage(dataUsersSorted)
     }else{
@@ -665,8 +708,9 @@ function paginationEventClick(e) {
 
     let page = parseInt(currentPage.dataset.currentpage)
 
-    if(page != links.length){
-      currentPage.dataset.currentpage = links.length
+    if(page != parseInt(countOfBtns.dataset.pages)){
+
+      currentPage.dataset.currentpage = parseInt(countOfBtns.dataset.pages)
       dataUsersSorted == undefined ? createPage(dataUsers) : createPage(dataUsersSorted)
     }else{
       e.preventDefault()

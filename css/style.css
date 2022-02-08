@@ -446,6 +446,7 @@ img{
 
 .pagination__inner{
   display: flex;
+  align-items: center;
   margin: 0 25px;
 }
 
