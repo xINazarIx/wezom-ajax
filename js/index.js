@@ -85,7 +85,7 @@ function createUsers(arr) { // Функция построения пользо�
 
   parent.appendChild(frag) // Вставляем элемент в Dom
 
-  createStatistic(arr) // Ф-ция которая создаёт статистику
+  dataUsersSorted == undefined ? createStatistic(dataUsers) : createStatistic(dataUsersSorted)
 }
 
 function createFilters() {
